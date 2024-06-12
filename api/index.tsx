@@ -30,8 +30,6 @@ export const app = new Frog<{ State: Partial<State> }>({
 app.frame(
   '/',
   async (c) => {
-    console.log(process.env)
-    console.log(process.env)
     return c.res({
       image: (
         <div style={twj('flex flex-col grow bg-background font-body items-center justify-center')}>
@@ -73,6 +71,9 @@ app.frame(
           </h3>
         </div>
       ),
+      headers: {
+        'Content-Type': 'image/png',
+      },
       intents: [
         <Button action="/coins/create">Get Started</Button>,
         <Button.Link href="https://fomofactory.wtf/top">Top Coins</Button.Link>,
@@ -292,6 +293,9 @@ app.frame(
           )}
         </div>
       ),
+      headers: {
+        'Content-Type': 'image/png',
+      },
       intents: [
         <TextInput
           placeholder={
@@ -383,6 +387,9 @@ app.frame(
           </div>
         </div>
       ),
+      headers: {
+        'Content-Type': 'image/png',
+      },
       intents: [
         <TextInput placeholder={'Enter amount in ETH to buy...'} />,
         <Button action="/coins/create">New Coin</Button>,
@@ -457,6 +464,9 @@ app.frame(
           </div>
         </div>
       ),
+      headers: {
+        'Content-Type': 'image/png',
+      },
       intents: [
         <TextInput placeholder={'Enter amount in ETH to buy...'} />,
         <Button action="/coins/create">New Coin</Button>,
