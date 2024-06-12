@@ -22,6 +22,7 @@ import { FeeAmount } from '@uniswap/v3-sdk'
 export const app = new Frog<{ State: Partial<State> }>({
   assetsPath: '/',
   basePath: '/api',
+  browserLocation: '/:path',
   initialState: {},
   hub: pinata(),
 })
