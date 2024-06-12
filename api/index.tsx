@@ -30,6 +30,8 @@ export const app = new Frog<{ State: Partial<State> }>({
 app.frame(
   '/',
   async (c) => {
+    console.log(import.meta.env)
+    console.log(process.env)
     return c.res({
       image: (
         <div style={twj('flex flex-col grow bg-background font-body items-center justify-center')}>
