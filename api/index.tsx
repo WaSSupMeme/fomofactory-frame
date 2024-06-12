@@ -479,7 +479,7 @@ app.transaction('/deploy', async (c) => {
   // Contract transaction response.
   return c.contract({
     abi: fomoFactoryAbi,
-    chainId: 'eip155:84532',
+    chainId: 'eip155:8453',
     functionName: 'createMemecoin',
     args: args.args as any,
     to: args.address,
@@ -497,7 +497,7 @@ app.transaction('/buy/:address/:amount?', async (c) => {
   // Contract transaction response.
   return c.contract({
     abi: swapRouterAbi,
-    chainId: 'eip155:84532',
+    chainId: 'eip155:8453',
     functionName: 'exactInputSingle',
     args: [
       {
