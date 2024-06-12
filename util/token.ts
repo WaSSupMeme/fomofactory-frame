@@ -36,6 +36,9 @@ function calculateInitialTick(totalSupply: number, marketCap: number, tickSpacin
   )
 }
 
+console.log(import.meta.env)
+console.log(process.env)
+
 const client = createPublicClient({
   chain: base,
   transport: http(import.meta.env.VITE_RPC_PROVIDER_URL),
