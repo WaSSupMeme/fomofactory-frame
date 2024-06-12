@@ -36,17 +36,14 @@ function calculateInitialTick(totalSupply: number, marketCap: number, tickSpacin
   )
 }
 
-console.log(import.meta.env)
-console.log(process.env)
-
 const client = createPublicClient({
   chain: base,
-  transport: http(import.meta.env.VITE_RPC_PROVIDER_URL),
+  transport: http(process.env.VITE_RPC_PROVIDER_URL),
 })
 
 export const computeTokenAddress = async (creator: `0x${string}`, state: State) => {
   return await client.readContract({
-    address: import.meta.env.VITE_FOMO_FACTORY_ADDRESS,
+    address: process.env.VITE_FOMO_FACTORY_ADDRESS as `0x${string}`,
     abi: fomoFactoryAbi,
     functionName: 'computeMemecoinAddress',
     args: [
@@ -84,7 +81,7 @@ export const saveMetadata = async (address: `0x${string}`, state: State) => {
   await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_PINATA_JWT}`,
+      Authorization: `Bearer ${process.env.VITE_PINATA_JWT}`,
     },
     body: formData,
   })
@@ -95,12 +92,12 @@ export const fetchUsdEthAmount = async (usdAmount: number) => {
     allowFailure: false,
     contracts: [
       {
-        address: import.meta.env.VITE_ETH_USD_AGGREGATOR_ADDRESS,
+        address: process.env.VITE_ETH_USD_AGGREGATOR_ADDRESS as `0x${string}`,
         abi: aggregatorV3InterfaceAbi,
         functionName: 'latestRoundData',
       },
       {
-        address: import.meta.env.VITE_ETH_USD_AGGREGATOR_ADDRESS,
+        address: process.env.VITE_ETH_USD_AGGREGATOR_ADDRESS as `0x${string}`,
         abi: aggregatorV3InterfaceAbi,
         functionName: 'decimals',
       },
@@ -116,12 +113,12 @@ export const fetchEthUsdAmount = async (ethAmount: number) => {
     allowFailure: false,
     contracts: [
       {
-        address: import.meta.env.VITE_ETH_USD_AGGREGATOR_ADDRESS,
+        address: process.env.VITE_ETH_USD_AGGREGATOR_ADDRESS as `0x${string}`,
         abi: aggregatorV3InterfaceAbi,
         functionName: 'latestRoundData',
       },
       {
-        address: import.meta.env.VITE_ETH_USD_AGGREGATOR_ADDRESS,
+        address: process.env.VITE_ETH_USD_AGGREGATOR_ADDRESS as `0x${string}`,
         abi: aggregatorV3InterfaceAbi,
         functionName: 'decimals',
       },
@@ -137,26 +134,26 @@ export const prepareDeploy = async (state: State) => {
     allowFailure: false,
     contracts: [
       {
-        address: import.meta.env.VITE_FOMO_FACTORY_ADDRESS,
+        address: process.env.VITE_FOMO_FACTORY_ADDRESS as `0x${string}`,
         abi: fomoFactoryAbi,
         functionName: 'protocolFee',
       },
       {
-        address: import.meta.env.VITE_UNISWAP_V3_FACTORY_ADDRESS,
+        address: process.env.VITE_UNISWAP_V3_FACTORY_ADDRESS as `0x${string}`,
         abi: iUniswapV3FactoryAbi,
         functionName: 'feeAmountTickSpacing',
         args: [FeeAmount.HIGH],
       },
     ],
   })
-  const marketCap = await fetchUsdEthAmount(import.meta.env.VITE_USD_MARKET_CAP)
+  const marketCap = await fetchUsdEthAmount(Number(process.env.VITE_USD_MARKET_CAP!!))
   const protocolFee = Number(formatEther(protocolFeeEth as bigint))
   const totalSupply = parseUnits(state.totalSupply.toString(), 18)
   const value = parseEther((Number(state.firstBuy || 0) + protocolFee).toString())
   const initialTick = calculateInitialTick(state.totalSupply, marketCap, tickSpacing as number)
 
   return {
-    address: import.meta.env.VITE_FOMO_FACTORY_ADDRESS,
+    address: process.env.VITE_FOMO_FACTORY_ADDRESS,
     args: [
       state.name,
       state.symbol,
@@ -255,7 +252,7 @@ interface DexData {
 
 export const fetchTokensDexData = async (address: `0x${string}`) => {
   const [poolAddress] = await client.readContract({
-    address: import.meta.env.VITE_FOMO_FACTORY_ADDRESS,
+    address: process.env.VITE_FOMO_FACTORY_ADDRESS as `0x${string}`,
     abi: fomoFactoryAbi,
     functionName: 'poolMetadataOf',
     args: [address],
@@ -300,7 +297,7 @@ export const fetchTokensDexData = async (address: `0x${string}`) => {
         functionName: 'totalSupply',
       },
       {
-        address: import.meta.env.VITE_WETH_ADDRESS,
+        address: process.env.VITE_WETH_ADDRESS as `0x${string}`,
         abi: erc20Abi,
         functionName: 'balanceOf',
         args: [poolAddress],
@@ -317,7 +314,7 @@ export const fetchTokensDexData = async (address: `0x${string}`) => {
       ? poolData.attributes.base_token_price_usd
       : poolData.attributes.quote_token_price_usd
   const ethPrice =
-    quoteToken.toLowerCase() === `base_${import.meta.env.VITE_WETH_ADDRESS.toLowerCase()}`
+    quoteToken.toLowerCase() === `base_${process.env.VITE_WETH_ADDRESS!!.toLowerCase()}`
       ? poolData.attributes.quote_token_price_usd
       : poolData.attributes.base_token_price_usd
 
@@ -337,7 +334,7 @@ export const fetchTokenMetadata = async (address: `0x${string}`) => {
     {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${import.meta.env.VITE_PINATA_JWT}`,
+        Authorization: `Bearer ${process.env.VITE_PINATA_JWT}`,
       },
     },
   )
@@ -346,7 +343,7 @@ export const fetchTokenMetadata = async (address: `0x${string}`) => {
   if (resData.rows.length > 0) {
     const avatar = resData.rows[0]!!
     return {
-      avatar: `${import.meta.env.VITE_GATEWAY_URL}/ipfs/${avatar.ipfs_pin_hash}/${avatar.metadata.keyvalues.fileName}`,
+      avatar: `${process.env.VITE_GATEWAY_URL}/ipfs/${avatar.ipfs_pin_hash}/${avatar.metadata.keyvalues.fileName}`,
       description: avatar.metadata.keyvalues.description,
       telegram: avatar.metadata.keyvalues.telegram,
       twitter: avatar.metadata.keyvalues.twitter,

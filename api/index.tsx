@@ -30,7 +30,7 @@ export const app = new Frog<{ State: Partial<State> }>({
 app.frame(
   '/',
   async (c) => {
-    console.log(import.meta.env)
+    console.log(process.env)
     console.log(process.env)
     return c.res({
       image: (
@@ -335,7 +335,7 @@ app.frame(
       }
     })
     const firstBuyUsd = await fetchEthUsdAmount(state.firstBuy || 0)
-    const liquidity = import.meta.env.VITE_USD_MARKET_CAP - firstBuyUsd
+    const liquidity = Number(process.env.VITE_USD_MARKET_CAP) - firstBuyUsd
 
     return c.res({
       image: (
@@ -369,7 +369,7 @@ app.frame(
             </h3>
             <div style={twj('flex grow')}></div>
             <h3 style={twj('text-secondary text-left text-4xl font-semibold font-body')}>
-              {`$${compactFormatter.format(import.meta.env.VITE_USD_MARKET_CAP)}`}
+              {`$${compactFormatter.format(Number(process.env.VITE_USD_MARKET_CAP))}`}
             </h3>
           </div>
           <div style={twj('flex flex-row items-center gap-1 w-1/2')}>
@@ -485,7 +485,7 @@ app.transaction('/deploy', async (c) => {
     chainId: 'eip155:8453',
     functionName: 'createMemecoin',
     args: args.args as any,
-    to: args.address,
+    to: args.address as `0x${string}`,
     value: args.value,
   })
 })
@@ -504,7 +504,7 @@ app.transaction('/buy/:address/:amount?', async (c) => {
     functionName: 'exactInputSingle',
     args: [
       {
-        tokenIn: import.meta.env.VITE_WETH_ADDRESS,
+        tokenIn: process.env.VITE_WETH_ADDRESS as `0x${string}`,
         tokenOut: address as `0x${string}`,
         fee: FeeAmount.HIGH,
         recipient: c.address as `0x${string}`,
@@ -513,14 +513,14 @@ app.transaction('/buy/:address/:amount?', async (c) => {
         sqrtPriceLimitX96: 0n,
       },
     ],
-    to: import.meta.env.VITE_UNISWAP_V3_SWAP_ROUTER_ADDRESS,
+    to: process.env.VITE_UNISWAP_V3_SWAP_ROUTER_ADDRESS as `0x${string}`,
     value: ethAmount,
   })
 })
 
 // @ts-ignore
 const isEdgeFunction = typeof EdgeFunction !== 'undefined'
-const isProduction = isEdgeFunction || import.meta.env?.MODE !== 'development'
+const isProduction = isEdgeFunction || process.env?.MODE !== 'development'
 devtools(app, isProduction ? { assetsPath: '/.frog' } : { serveStatic })
 
 export const GET = handle(app)
