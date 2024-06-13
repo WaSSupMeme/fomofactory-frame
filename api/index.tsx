@@ -4,7 +4,8 @@ import { devtools } from 'frog/dev'
 import { serveStatic } from 'frog/serve-static'
 import { handle } from 'frog/vercel'
 
-import { twj, fonts, formatter, compactFormatter } from '../ui/ui.js'
+import { fonts, formatter, compactFormatter, Spacer, HStack } from '../ui/ui.js'
+import { Box, Columns, Column, Heading, Image, VStack, vars } from '../ui/ui.js'
 import { State } from '../types/state.js'
 
 import { fomoFactoryAbi, swapRouterAbi } from '../abi/generated.js'
@@ -20,6 +21,7 @@ import {
 import { FeeAmount } from '@uniswap/v3-sdk'
 
 export const app = new Frog<{ State: Partial<State> }>({
+  ui: { vars },
   assetsPath: '/',
   basePath: '/api',
   browserLocation: '/:path',
@@ -32,44 +34,69 @@ app.frame(
   async (c) => {
     return c.res({
       image: (
-        <div style={twj('flex flex-col grow bg-background font-body items-center justify-center')}>
-          <img src="/logo.png" alt="FomoFactory" style={twj('h-32')} />
-          <h1
-            style={twj(
-              'text-foreground text-center text-7xl font-extrabold font-body tracking-tighter',
-            )}
-          >
-            <span>Create your</span>
-          </h1>
-          <h1
-            style={twj(
-              '-mt-4 text-foreground text-center text-7xl font-extrabold font-body tracking-tighter',
-            )}
-          >
-            <span>memecoin</span>
-            <svg
-              style={twj('mx-3 -mt-1 h-16 w-16')}
-              viewBox="0 0 111 111"
-              preserveAspectRatio="xMinYMin slice"
-              fill="none"
-              role="img"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M54.921 110.034C85.359 110.034 110.034 85.402 110.034 55.017C110.034 24.6319 85.359 0 54.921 0C26.0432 0 2.35281 22.1714 0 50.3923H72.8467V59.6416H3.9565e-07C2.35281 87.8625 26.0432 110.034 54.921 110.034Z"
-                fill="#0052FF"
-              />
-            </svg>
-            <span style={twj('text-primary')}>on Base</span>
-          </h1>
-          <h3
-            style={twj(
-              'text-foreground text-center text-4xl font-semibold font-body tracking-tighter w-1/2',
-            )}
-          >
-            Deploy a contract, add liquidity and bootstrap trading with one click
-          </h3>
-        </div>
+        <Box grow alignHorizontal="center" backgroundColor="background" padding="32">
+          <VStack gap="12" alignHorizontal="center">
+            <Image src="/logo.png" height="72" />
+            <VStack gap="0" alignHorizontal="center">
+              <Heading font="SF Pro Text" weight="800" size="48" tracking="-4" align="center">
+                Create your
+              </Heading>
+              <HStack gap="0" alignHorizontal="center">
+                <Heading
+                  font="SF Pro Text"
+                  weight="800"
+                  size="48"
+                  tracking="-4"
+                  align="center"
+                  wrap
+                >
+                  memecoin
+                </Heading>
+                <Spacer size="8" />
+                <Heading
+                  font="SF Pro Text"
+                  weight="800"
+                  size="48"
+                  tracking="-4"
+                  align="center"
+                  color="invert"
+                  wrap
+                >
+                  <>
+                    <Image src="/base.png" height="42" />
+                    <Spacer size="8" />
+                    {'on Base'}
+                  </>
+                </Heading>
+              </HStack>
+            </VStack>
+            <Spacer size="4" />
+            <VStack gap="0" alignHorizontal="center">
+              <Heading
+                color="text"
+                size="24"
+                font="SF Pro Text"
+                weight="600"
+                tracking="-2"
+                align="center"
+                wrap
+              >
+                Deploy a contract, add liquidity and
+              </Heading>
+              <Heading
+                color="text"
+                size="24"
+                font="SF Pro Text"
+                weight="600"
+                tracking="-2"
+                align="center"
+                wrap
+              >
+                bootstrap trading with one click
+              </Heading>
+            </VStack>
+          </VStack>
+        </Box>
       ),
       intents: [
         <Button action="/coins/create">Get Started</Button>,
@@ -154,6 +181,16 @@ app.frame(
     const showSummary =
       state.name && state.symbol && state.totalSupply && state.image && state.firstBuy !== undefined
 
+    const firstBuyTokensFn = async () => {
+      if (state.firstBuy) {
+        const usdAmount = await fetchEthUsdAmount(state.firstBuy)
+        return (usdAmount / Number(process.env.VITE_USD_MARKET_CAP)) * state.totalSupply!!
+      }
+      return 0
+    }
+
+    const firstBuyTokens = await firstBuyTokensFn()
+
     const intents = []
     const textInputPlaceholder = !state.name
       ? 'Enter your coin name...'
@@ -190,140 +227,325 @@ app.frame(
 
     return c.res({
       image: (
-        <div style={twj('flex flex-col grow bg-background font-body items-center justify-center')}>
+        <>
           {showDetails && (
-            <div style={twj('flex flex-col grow items-center justify-center w-full')}>
-              <h1
-                style={twj(
-                  'text-foreground text-center text-7xl font-extrabold font-body tracking-tighter w-3/4',
-                )}
+            <Box
+              grow
+              height="100%"
+              alignHorizontal="center"
+              alignVertical="center"
+              alignItems="center"
+              alignContent="center"
+              backgroundColor="background"
+              padding="32"
+              paddingTop="64"
+              gap="32"
+            >
+              <Heading
+                color="text"
+                size="32"
+                font="SF Pro Text"
+                weight="800"
+                tracking="-2"
+                align="center"
               >
                 Let's get some details about your coin
-              </h1>
-              <div style={twj('flex flex-col items-left justify-left w-1/2')}>
-                <div style={twj('flex flex-row w-full')}>
-                  <h3
-                    style={twj(
-                      'text-left text-4xl font-semibold font-body',
-                      !state.name ? 'text-primary' : 'text-foreground',
-                    )}
+              </Heading>
+              <Columns gap="8" grow width="100%" paddingLeft="96" paddingRight="96">
+                <Column alignHorizontal="left" gap="12">
+                  <Heading
+                    color={!state.name ? 'invert' : 'text'}
+                    size="24"
+                    font="SF Pro Text"
+                    weight="600"
+                    tracking="-2"
+                    align="center"
+                    wrap
                   >
                     Name
-                  </h3>
-                  <div style={twj('flex grow')} />
-                  <h3
-                    style={twj(
-                      'text-left text-4xl font-semibold font-body',
-                      !state.name ? 'text-secondary' : 'text-foreground',
-                    )}
-                  >
-                    {state.name || `eg 'dogwifhat'`}
-                  </h3>
-                </div>
-                <div style={twj('flex flex-row w-full')}>
-                  <h3
-                    style={twj(
-                      'text-left text-4xl font-semibold font-body',
-                      state.name && !state.symbol ? 'text-primary' : 'text-foreground',
-                    )}
+                  </Heading>
+                  <Heading
+                    color={state.name && !state.symbol ? 'invert' : 'text'}
+                    size="24"
+                    font="SF Pro Text"
+                    weight="600"
+                    tracking="-2"
+                    align="center"
+                    wrap
                   >
                     Symbol
-                  </h3>
-                  <div style={twj('flex grow')} />
-                  <h3
-                    style={twj(
-                      'text-left text-4xl font-semibold font-body',
-                      !state.symbol ? 'text-secondary' : 'text-foreground',
-                    )}
-                  >
-                    {state.symbol || `eg '$WIF'`}
-                  </h3>
-                </div>
-                <div style={twj('flex flex-row w-full')}>
-                  <h3
-                    style={twj(
-                      'text-left text-4xl font-semibold font-body',
-                      state.name && state.symbol && !state.totalSupply
-                        ? 'text-primary'
-                        : 'text-foreground',
-                    )}
+                  </Heading>
+                  <Heading
+                    color={state.name && state.symbol && !state.totalSupply ? 'invert' : 'text'}
+                    size="24"
+                    font="SF Pro Text"
+                    weight="600"
+                    tracking="-2"
+                    align="center"
+                    wrap
                   >
                     Total Supply
-                  </h3>
-                  <div style={twj('flex grow')} />
-                  <h3
-                    style={twj(
-                      'text-left text-4xl font-semibold font-body',
-                      !state.totalSupply ? 'text-secondary' : 'text-foreground',
-                    )}
+                  </Heading>
+                </Column>
+                <Column alignHorizontal="right" gap="12">
+                  <Heading
+                    color={!state.name ? 'text100' : 'text'}
+                    size="24"
+                    font="SF Pro Text"
+                    weight="600"
+                    tracking="-2"
+                    align="center"
+                    wrap
+                  >
+                    {state.name || `eg 'dogwifhat'`}
+                  </Heading>
+                  <Heading
+                    color={!state.symbol ? 'text100' : 'text'}
+                    size="24"
+                    font="SF Pro Text"
+                    weight="600"
+                    tracking="-2"
+                    align="center"
+                    wrap
+                  >
+                    {state.symbol || `eg '$WIF'`}
+                  </Heading>
+                  <Heading
+                    color={!state.totalSupply ? 'text100' : 'text'}
+                    size="24"
+                    font="SF Pro Text"
+                    weight="600"
+                    tracking="-2"
+                    align="center"
+                    wrap
                   >
                     {state.totalSupply ? formatter.format(state.totalSupply) : `eg '420,000,000'`}
-                  </h3>
-                </div>
-              </div>
-            </div>
+                  </Heading>
+                </Column>
+              </Columns>
+            </Box>
           )}
           {showImage && (
-            <div style={twj('flex flex-col grow items-center justify-center w-full gap-y-8')}>
-              <h1
-                style={twj(
-                  'text-foreground text-center text-7xl font-extrabold font-body tracking-tighter',
-                )}
+            <Box
+              grow
+              height="100%"
+              alignHorizontal="center"
+              alignVertical="center"
+              alignItems="center"
+              alignContent="center"
+              backgroundColor="background"
+              padding="32"
+              paddingTop="64"
+              gap="32"
+            >
+              <Heading
+                color="text"
+                size="32"
+                font="SF Pro Text"
+                weight="800"
+                tracking="-2"
+                align="center"
               >
                 Let's add a coin picture
-              </h1>
-              <img src="/doge.png" style={twj('h-48 fill-muted')} />
-            </div>
+              </Heading>
+              <Image src="/doge.png" height="128" />
+            </Box>
           )}
           {showFirstBuy && (
-            <div style={twj('flex flex-col grow items-center justify-center w-full gap-y-8')}>
-              <h1
-                style={twj(
-                  'text-foreground text-center text-7xl font-extrabold font-body tracking-tighter',
-                )}
+            <Box
+              grow
+              height="100%"
+              alignHorizontal="center"
+              alignVertical="center"
+              alignItems="center"
+              alignContent="center"
+              backgroundColor="background"
+              padding="32"
+              paddingTop="64"
+              gap="32"
+            >
+              <Heading
+                color="text"
+                size="32"
+                font="SF Pro Text"
+                weight="800"
+                tracking="-2"
+                align="center"
               >
                 Do you want to make a first buy?
-              </h1>
-              <h3
-                style={twj(
-                  'text-primary text-center text-5xl font-extrabold font-body tracking-tighter w-3/4',
-                )}
-              >
-                This will make your coin discoverable by DEX tools and will give you a head start
-                over snipers
-              </h3>
-            </div>
+              </Heading>
+              <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
+                <Column alignHorizontal="left" gap="4" alignVertical="center">
+                  <Heading
+                    color="text"
+                    size="18"
+                    font="SF Pro Text"
+                    weight="600"
+                    tracking="-2"
+                    align="center"
+                    wrap
+                  >
+                    {state.name!!}
+                  </Heading>
+                  <Heading
+                    color="text100"
+                    size="18"
+                    font="SF Pro Text"
+                    weight="600"
+                    tracking="-2"
+                    align="center"
+                    wrap
+                  >
+                    {state.symbol!!}
+                  </Heading>
+                  <Heading
+                    color="text"
+                    size="18"
+                    font="SF Pro Text"
+                    weight="600"
+                    tracking="-2"
+                    align="center"
+                    wrap
+                  >
+                    {formatter.format(state.totalSupply!!)}
+                  </Heading>
+                </Column>
+                <Column alignHorizontal="right">
+                  <Image
+                    src={state.image || '/doge.png'}
+                    height="96"
+                    width="96"
+                    borderRadius="8"
+                    objectFit="cover"
+                  />
+                </Column>
+              </Columns>
+              <VStack gap="0">
+                <Heading
+                  color="invert"
+                  size="24"
+                  font="SF Pro Text"
+                  weight="600"
+                  tracking="-2"
+                  align="center"
+                  wrap="balance"
+                >
+                  This will make your coin discoverable by DEX
+                </Heading>
+                <Heading
+                  color="invert"
+                  size="24"
+                  font="SF Pro Text"
+                  weight="600"
+                  tracking="-2"
+                  align="center"
+                  wrap="balance"
+                >
+                  tools and will give you a head start over snipers
+                </Heading>
+              </VStack>
+            </Box>
           )}
           {showSummary && (
-            <div style={twj('flex flex-col grow items-center justify-center w-full gap-y-8')}>
-              <h1
-                style={twj(
-                  'text-foreground text-center text-7xl font-extrabold font-body tracking-tighter',
-                )}
+            <Box
+              grow
+              height="100%"
+              alignHorizontal="center"
+              alignVertical="center"
+              alignItems="center"
+              alignContent="center"
+              backgroundColor="background"
+              padding="32"
+              paddingTop="64"
+              gap="32"
+            >
+              <Heading
+                color="text"
+                size="32"
+                font="SF Pro Text"
+                weight="800"
+                tracking="-2"
+                align="center"
               >
                 LFG?
-              </h1>
-              <div style={twj('flex flex-row items-center justify-center w-1/2')}>
-                <div style={twj('flex flex-col')}>
-                  <h3 style={twj('text-foreground text-left text-4xl font-semibold font-body')}>
-                    {state.name}
-                  </h3>
-                  <h3 style={twj('text-secondary text-left text-4xl font-semibold font-body')}>
-                    {state.symbol}
-                  </h3>
-                  <h3 style={twj('text-foreground text-left text-4xl font-semibold font-body')}>
+              </Heading>
+              <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
+                <Column alignHorizontal="left" gap="4" alignVertical="center">
+                  <Heading
+                    color="text"
+                    size="18"
+                    font="SF Pro Text"
+                    weight="600"
+                    tracking="-2"
+                    align="center"
+                    wrap
+                  >
+                    {state.name!!}
+                  </Heading>
+                  <Heading
+                    color="text100"
+                    size="18"
+                    font="SF Pro Text"
+                    weight="600"
+                    tracking="-2"
+                    align="center"
+                    wrap
+                  >
+                    {state.symbol!!}
+                  </Heading>
+                  <Heading
+                    color="text"
+                    size="18"
+                    font="SF Pro Text"
+                    weight="600"
+                    tracking="-2"
+                    align="center"
+                    wrap
+                  >
                     {formatter.format(state.totalSupply!!)}
-                  </h3>
-                </div>
-                <div style={twj('flex grow')} />
-                <img
-                  src={state.image}
-                  style={twj('aspect-square h-48 w-48 rounded-lg object-cover')}
-                />
-              </div>
-            </div>
+                  </Heading>
+                </Column>
+                <Column alignHorizontal="right">
+                  <Image
+                    src={state.image || '/doge.png'}
+                    height="96"
+                    width="96"
+                    borderRadius="8"
+                    objectFit="cover"
+                  />
+                </Column>
+              </Columns>
+              {state.firstBuy ? (
+                <VStack gap="0">
+                  <Heading
+                    color="invert"
+                    size="24"
+                    font="SF Pro Text"
+                    weight="600"
+                    tracking="-2"
+                    align="center"
+                    wrap="balance"
+                  >
+                    {`You're getting ~${compactFormatter.format(firstBuyTokens)} ${state.symbol}`}
+                  </Heading>
+                  <Heading
+                    color="invert"
+                    size="24"
+                    font="SF Pro Text"
+                    weight="600"
+                    tracking="-2"
+                    align="center"
+                    wrap="balance"
+                  >
+                    as a first buyer
+                  </Heading>
+                </VStack>
+              ) : (
+                <></>
+              )}
+            </Box>
           )}
-        </div>
+        </>
       ),
       intents,
     })
@@ -347,49 +569,129 @@ app.frame(
 
     return c.res({
       image: (
-        <div style={twj('flex flex-col grow bg-background font-body items-center justify-center')}>
-          <img src="/logo.png" alt="FomoFactory" style={twj('h-32')} />
-          <div style={twj('flex flex-row items-center justify-center w-1/2')}>
-            <div style={twj('flex flex-col')}>
-              <h3 style={twj('text-foreground text-left text-4xl font-semibold font-body')}>
+        <Box
+          grow
+          height="100%"
+          alignHorizontal="center"
+          alignVertical="center"
+          alignItems="center"
+          alignContent="center"
+          backgroundColor="background"
+          padding="32"
+          gap="16"
+        >
+          <Image src="/logo.png" height="72" />
+          <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
+            <Column alignHorizontal="left" gap="8" alignVertical="center">
+              <Heading
+                color="text"
+                size="18"
+                font="SF Pro Text"
+                weight="600"
+                tracking="-1"
+                align="center"
+                wrap
+              >
                 {state.name}
-              </h3>
-              <h3 style={twj('text-secondary text-left text-4xl font-semibold font-body')}>
+              </Heading>
+              <Heading
+                color="text100"
+                size="18"
+                font="SF Pro Text"
+                weight="600"
+                tracking="-1"
+                align="center"
+                wrap
+              >
                 {state.symbol}
-              </h3>
-            </div>
-            <div style={twj('flex grow')} />
-            <img src={state.image} style={twj('aspect-square h-48 w-48 rounded-lg object-cover')} />
-          </div>
-          <div style={twj('flex flex-row items-center gap-0 w-1/2')}>
-            <h3 style={twj('text-primary text-left text-4xl font-semibold font-body')}>
-              Liquidity
-            </h3>
-            <div style={twj('flex grow')}></div>
-            <h3 style={twj('text-secondary text-left text-4xl font-semibold font-body')}>
-              {`$${compactFormatter.format(liquidity)}`}
-            </h3>
-            <img src="/lock.png" style={twj('-mt-3 h-8')} />
-          </div>
-          <div style={twj('flex flex-row items-center gap-2 w-1/2')}>
-            <h3 style={twj('text-primary text-left text-4xl font-semibold font-body')}>
-              Market Cap
-            </h3>
-            <div style={twj('flex grow')}></div>
-            <h3 style={twj('text-secondary text-left text-4xl font-semibold font-body')}>
-              {`$${compactFormatter.format(Number(process.env.VITE_USD_MARKET_CAP))}`}
-            </h3>
-          </div>
-          <div style={twj('flex flex-row items-center gap-1 w-1/2')}>
-            <h3 style={twj('text-primary text-left text-4xl font-semibold font-body')}>
-              Volume (24h)
-            </h3>
-            <div style={twj('flex grow')}></div>
-            <h3 style={twj('text-secondary text-left text-4xl font-semibold font-body')}>
-              {`$${compactFormatter.format(firstBuyUsd)}`}
-            </h3>
-          </div>
-        </div>
+              </Heading>
+            </Column>
+            <Column alignHorizontal="right">
+              <Image
+                src={state.image || '/doge.png'}
+                height="96"
+                width="96"
+                borderRadius="8"
+                objectFit="cover"
+              />
+            </Column>
+          </Columns>
+          <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
+            <Column alignHorizontal="left" gap="4" alignVertical="center">
+              <Heading
+                color="invert"
+                size="18"
+                font="SF Pro Text"
+                weight="600"
+                tracking="-1"
+                align="center"
+                wrap
+              >
+                Liquidity
+              </Heading>
+              <Heading
+                color="invert"
+                size="18"
+                font="SF Pro Text"
+                weight="600"
+                tracking="-1"
+                align="center"
+                wrap
+              >
+                Market Cap
+              </Heading>
+              <Heading
+                color="invert"
+                size="18"
+                font="SF Pro Text"
+                weight="600"
+                tracking="-1"
+                align="center"
+                wrap
+              >
+                Volume (24h)
+              </Heading>
+            </Column>
+            <Column alignHorizontal="right" gap="4" alignVertical="center">
+              <HStack>
+                <Heading
+                  color="text100"
+                  size="18"
+                  font="SF Pro Text"
+                  weight="600"
+                  tracking="-1"
+                  align="center"
+                  wrap
+                >
+                  {`$${compactFormatter.format(liquidity)}`}
+                </Heading>
+                <Image src="/lock.png" height="16" />
+              </HStack>
+              <Heading
+                color="text100"
+                size="18"
+                font="SF Pro Text"
+                weight="600"
+                tracking="-1"
+                align="center"
+                wrap
+              >
+                {`$${compactFormatter.format(Number(process.env.VITE_USD_MARKET_CAP))}`}
+              </Heading>
+              <Heading
+                color="text100"
+                size="18"
+                font="SF Pro Text"
+                weight="600"
+                tracking="-1"
+                align="center"
+                wrap
+              >
+                {`$${compactFormatter.format(firstBuyUsd)}`}
+              </Heading>
+            </Column>
+          </Columns>
+        </Box>
       ),
       intents: [
         <TextInput placeholder={'Enter amount in ETH to buy...'} />,
@@ -421,49 +723,129 @@ app.frame(
 
     return c.res({
       image: (
-        <div style={twj('flex flex-col grow bg-background font-body items-center justify-center')}>
-          <img src="/logo.png" alt="FomoFactory" style={twj('h-32')} />
-          <div style={twj('flex flex-row items-center justify-center w-1/2')}>
-            <div style={twj('flex flex-col')}>
-              <h3 style={twj('text-foreground text-left text-4xl font-semibold font-body')}>
+        <Box
+          grow
+          height="100%"
+          alignHorizontal="center"
+          alignVertical="center"
+          alignItems="center"
+          alignContent="center"
+          backgroundColor="background"
+          padding="32"
+          gap="16"
+        >
+          <Image src="/logo.png" height="72" />
+          <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
+            <Column alignHorizontal="left" gap="8" alignVertical="center">
+              <Heading
+                color="text"
+                size="18"
+                font="SF Pro Text"
+                weight="600"
+                tracking="-1"
+                align="center"
+                wrap
+              >
                 {data.name}
-              </h3>
-              <h3 style={twj('text-secondary text-left text-4xl font-semibold font-body')}>
+              </Heading>
+              <Heading
+                color="text100"
+                size="18"
+                font="SF Pro Text"
+                weight="600"
+                tracking="-1"
+                align="center"
+                wrap
+              >
                 {data.symbol}
-              </h3>
-            </div>
-            <div style={twj('flex grow')} />
-            <img src={data.avatar} style={twj('aspect-square h-48 w-48 rounded-lg object-cover')} />
-          </div>
-          <div style={twj('flex flex-row items-center gap-0 w-1/2')}>
-            <h3 style={twj('text-primary text-left text-4xl font-semibold font-body')}>
-              Liquidity
-            </h3>
-            <div style={twj('flex grow')}></div>
-            <h3 style={twj('text-secondary text-left text-4xl font-semibold font-body')}>
-              {data.liquidity ? `$${compactFormatter.format(data.liquidity)}` : '-'}
-            </h3>
-            {data.liquidity && <img src="/lock.png" style={twj('-mt-3 h-8')} />}
-          </div>
-          <div style={twj('flex flex-row items-center gap-2 w-1/2')}>
-            <h3 style={twj('text-primary text-left text-4xl font-semibold font-body')}>
-              Market Cap
-            </h3>
-            <div style={twj('flex grow')}></div>
-            <h3 style={twj('text-secondary text-left text-4xl font-semibold font-body')}>
-              {data.marketCap ? `$${compactFormatter.format(data.marketCap)}` : '-'}
-            </h3>
-          </div>
-          <div style={twj('flex flex-row items-center gap-1 w-1/2')}>
-            <h3 style={twj('text-primary text-left text-4xl font-semibold font-body')}>
-              Volume (24h)
-            </h3>
-            <div style={twj('flex grow')}></div>
-            <h3 style={twj('text-secondary text-left text-4xl font-semibold font-body')}>
-              {data.volume?.h24 ? `$${compactFormatter.format(data.volume.h24)}` : '-'}
-            </h3>
-          </div>
-        </div>
+              </Heading>
+            </Column>
+            <Column alignHorizontal="right">
+              <Image
+                src={data.avatar || '/doge.png'}
+                height="96"
+                width="96"
+                borderRadius="8"
+                objectFit="cover"
+              />
+            </Column>
+          </Columns>
+          <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
+            <Column alignHorizontal="left" gap="4" alignVertical="center">
+              <Heading
+                color="invert"
+                size="18"
+                font="SF Pro Text"
+                weight="600"
+                tracking="-1"
+                align="center"
+                wrap
+              >
+                Liquidity
+              </Heading>
+              <Heading
+                color="invert"
+                size="18"
+                font="SF Pro Text"
+                weight="600"
+                tracking="-1"
+                align="center"
+                wrap
+              >
+                Market Cap
+              </Heading>
+              <Heading
+                color="invert"
+                size="18"
+                font="SF Pro Text"
+                weight="600"
+                tracking="-1"
+                align="center"
+                wrap
+              >
+                Volume (24h)
+              </Heading>
+            </Column>
+            <Column alignHorizontal="right" gap="4" alignVertical="center">
+              <HStack>
+                <Heading
+                  color="text100"
+                  size="18"
+                  font="SF Pro Text"
+                  weight="600"
+                  tracking="-1"
+                  align="center"
+                  wrap
+                >
+                  {data.liquidity ? `$${compactFormatter.format(data.liquidity)}` : '-'}
+                </Heading>
+                {data.liquidity ? <Image src="/lock.png" height="16" /> : <></>}
+              </HStack>
+              <Heading
+                color="text100"
+                size="18"
+                font="SF Pro Text"
+                weight="600"
+                tracking="-1"
+                align="center"
+                wrap
+              >
+                {data.marketCap ? `$${compactFormatter.format(data.marketCap)}` : '-'}
+              </Heading>
+              <Heading
+                color="text100"
+                size="18"
+                font="SF Pro Text"
+                weight="600"
+                tracking="-1"
+                align="center"
+                wrap
+              >
+                {data.volume?.h24 ? `$${compactFormatter.format(data.volume.h24)}` : '-'}
+              </Heading>
+            </Column>
+          </Columns>
+        </Box>
       ),
       intents: [
         <TextInput placeholder={'Enter amount in ETH to buy...'} />,

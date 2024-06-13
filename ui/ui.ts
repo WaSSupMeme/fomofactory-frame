@@ -1,35 +1,7 @@
-import { tailwindToCSS } from 'tw-to-css'
+import { createSystem, colors, units } from 'frog/ui'
 
 import * as fs from 'node:fs/promises'
 import * as path from 'node:path'
-
-export const { twi, twj } = tailwindToCSS({
-  config: {
-    theme: {
-      fontFamily: {
-        body: ['SF Pro Text'],
-      },
-      extend: {
-        colors: {
-          background: 'hsl(0, 0%, 8%)',
-          foreground: 'hsl(0, 0%, 98%)',
-          primary: {
-            DEFAULT: 'hsl(221, 100%, 50%)',
-            foreground: 'hsl(0, 0%, 100%)',
-          },
-          secondary: {
-            DEFAULT: 'hsl(0, 0%, 35%)',
-            foreground: 'hsl(0, 0%, 100%)',
-          },
-          muted: {
-            DEFAULT: 'hsl(0, 0%, 14.9%)',
-            foreground: 'hsl(0, 0%, 63.9%)',
-          },
-        },
-      },
-    },
-  },
-})
 
 const sfProRoundedRegularFont = fs.readFile(
   path.join(path.resolve(process.cwd(), 'public'), 'SF-Pro-Rounded-Regular.ttf'),
@@ -71,39 +43,73 @@ export const fonts = async (): Promise<any> => {
     sfProTextSemiboldFont,
     sfProTextBoldFont,
   ])
-  return [
-    {
-      name: 'SF Pro Rounded',
-      weight: 400,
-      data: sfProRoundedRegularFontData,
-    },
-    {
-      name: 'SF Pro Rounded',
-      weight: 600,
-      data: sfProRoundedSemiboldFontData,
-    },
-    {
-      name: 'SF Pro Rounded',
-      weight: 800,
-      data: sfProRoundedBoldFontData,
-    },
-    {
-      name: 'SF Pro Text',
-      weight: 400,
-      data: sfProTextRegularFontData,
-    },
-    {
-      name: 'SF Pro Text',
-      weight: 600,
-      data: sfProTextSemiboldFontData,
-    },
-    {
-      name: 'SF Pro Text',
-      weight: 800,
-      data: sfProTextBoldFontData,
-    },
-  ]
+  return {
+    'SF Pro Rounded': [
+      {
+        name: 'SF Pro Rounded',
+        weight: 400,
+        data: sfProRoundedRegularFontData,
+      },
+      {
+        name: 'SF Pro Rounded',
+        weight: 600,
+        data: sfProRoundedSemiboldFontData,
+      },
+      {
+        name: 'SF Pro Rounded',
+        weight: 800,
+        data: sfProRoundedBoldFontData,
+      },
+    ],
+    'SF Pro Text': [
+      {
+        name: 'SF Pro Text',
+        weight: 400,
+        data: sfProTextRegularFontData,
+      },
+      {
+        name: 'SF Pro Text',
+        weight: 600,
+        data: sfProTextSemiboldFontData,
+      },
+      {
+        name: 'SF Pro Text',
+        weight: 800,
+        data: sfProTextBoldFontData,
+      },
+    ],
+  }
 }
+
+export const {
+  Box,
+  Columns,
+  Column,
+  Divider,
+  Icon,
+  Image,
+  Heading,
+  HStack,
+  Rows,
+  Row,
+  Spacer,
+  Text,
+  VStack,
+  vars,
+} = createSystem({
+  fonts: await fonts(),
+  colors: {
+    ...colors.dark,
+    background: '#000000',
+    invert: '#0051FF',
+    text: '#FAFAFA',
+    text100: '#595959',
+    text200: '#262626',
+  },
+  units: {
+    ...units,
+  },
+})
 
 export const formatter = Intl.NumberFormat('en', {
   notation: 'standard',
