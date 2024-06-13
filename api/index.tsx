@@ -215,7 +215,7 @@ app.frame(
     }
 
     const avatar = state.image
-      ? await resizeImage(state.image, 128, `${stateHash(state)}.png`)
+      ? await resizeImage(state.image, 96, `${stateHash(state)}.png`)
       : '/doge.png'
 
     const details = (
@@ -464,7 +464,7 @@ app.frame(
     const firstBuyUsd = await fetchEthUsdAmount(state.firstBuy || 0)
     const liquidity = Number(process.env.VITE_USD_MARKET_CAP) - firstBuyUsd
     const avatar = state.image
-      ? await resizeImage(state.image, 128, `${state.address}.png`)
+      ? await resizeImage(state.image, 96, `${state.address}.png`)
       : '/doge.png'
 
     return c.res({
@@ -617,7 +617,7 @@ app.frame(
     const { address } = c.req.param()
 
     const data = await fetchTokenData(address as `0x${string}`)
-    const avatar = data.avatar ? await resizeImage(data.avatar, 128) : '/doge.png'
+    const avatar = data.avatar ? await resizeImage(data.avatar, 96) : '/doge.png'
 
     return c.res({
       title: `FomoFactory - ${data.symbol}`,
