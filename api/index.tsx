@@ -35,6 +35,7 @@ app.frame(
   '/',
   async (c) => {
     return c.res({
+      title: 'FomoFactory',
       image: (
         <Box
           grow
@@ -52,7 +53,7 @@ app.frame(
               <Heading font="SF Pro Display" weight="800" size="48" tracking="-2" align="center">
                 Create your
               </Heading>
-              <HStack gap="0" alignHorizontal="center">
+              <HStack gap="8" alignHorizontal="center">
                 <Heading
                   font="SF Pro Display"
                   weight="800"
@@ -63,7 +64,7 @@ app.frame(
                 >
                   memecoin
                 </Heading>
-                <Spacer size="8" />
+                <Image src="/base.png" height="42" />
                 <Heading
                   font="SF Pro Display"
                   weight="800"
@@ -73,37 +74,15 @@ app.frame(
                   color="invert"
                   wrap
                 >
-                  <>
-                    <Image src="/base.png" height="42" />
-                    <Spacer size="8" />
-                    {'on Base'}
-                  </>
+                  on Base
                 </Heading>
               </HStack>
             </VStack>
             <Spacer size="4" />
-            <VStack gap="0" alignHorizontal="center">
-              <Heading
-                color="text"
-                size="24"
-                font="SF Pro Display"
-                weight="600"
-                align="center"
-                wrap
-              >
-                Deploy a contract, add liquidity and
-              </Heading>
-              <Heading
-                color="text"
-                size="24"
-                font="SF Pro Display"
-                weight="600"
-                align="center"
-                wrap
-              >
-                bootstrap trading with one click
-              </Heading>
-            </VStack>
+            <Heading color="text" size="24" font="SF Pro Display" weight="600" align="center" wrap>
+              <span>Deploy a contract, add liquidity and</span>
+              <span>bootstrap trading with one click</span>
+            </Heading>
           </VStack>
         </Box>
       ),
@@ -238,279 +217,231 @@ app.frame(
       ? await resizeImage(state.image, 128, `${stateHash(state)}.png`)
       : '/doge.png'
 
+    const details = (
+      <Box
+        grow
+        minHeight="100%"
+        alignHorizontal="center"
+        alignVertical="center"
+        alignItems="center"
+        alignContent="center"
+        backgroundColor="background"
+        padding="32"
+        paddingTop="64"
+        gap="32"
+      >
+        <Heading color="text" size="32" font="SF Pro Display" weight="800" align="center">
+          Let's get some details about your coin
+        </Heading>
+        <Columns gap="8" grow width="100%" paddingLeft="96" paddingRight="96">
+          <Column alignHorizontal="left" gap="12">
+            <Heading
+              color={!state.name ? 'invert' : 'text'}
+              size="24"
+              font="SF Pro Display"
+              weight="600"
+              align="center"
+              wrap
+            >
+              Name
+            </Heading>
+            <Heading
+              color={state.name && !state.symbol ? 'invert' : 'text'}
+              size="24"
+              font="SF Pro Display"
+              weight="600"
+              align="center"
+              wrap
+            >
+              Symbol
+            </Heading>
+            <Heading
+              color={state.name && state.symbol && !state.totalSupply ? 'invert' : 'text'}
+              size="24"
+              font="SF Pro Display"
+              weight="600"
+              align="center"
+              wrap
+            >
+              Total Supply
+            </Heading>
+          </Column>
+          <Column alignHorizontal="right" gap="12">
+            <Heading
+              color={!state.name ? 'text100' : 'text'}
+              size="24"
+              font="SF Pro Display"
+              weight="600"
+              align="center"
+              wrap
+            >
+              {state.name || `eg 'dogwifhat'`}
+            </Heading>
+            <Heading
+              color={!state.symbol ? 'text100' : 'text'}
+              size="24"
+              font="SF Pro Display"
+              weight="600"
+              align="center"
+              wrap
+            >
+              {state.symbol || `eg '$WIF'`}
+            </Heading>
+            <Heading
+              color={!state.totalSupply ? 'text100' : 'text'}
+              size="24"
+              font="SF Pro Display"
+              weight="600"
+              align="center"
+              wrap
+            >
+              {state.totalSupply ? formatter.format(state.totalSupply) : `eg '420,000,000'`}
+            </Heading>
+          </Column>
+        </Columns>
+      </Box>
+    )
+
+    const image = (
+      <Box
+        grow
+        minHeight="100%"
+        alignHorizontal="center"
+        alignVertical="center"
+        alignItems="center"
+        alignContent="center"
+        backgroundColor="background"
+        padding="32"
+        paddingTop="64"
+        gap="32"
+      >
+        <Heading
+          color="text"
+          size="32"
+          font="SF Pro Display"
+          weight="800"
+          tracking="-2"
+          align="center"
+        >
+          Let's add a coin picture
+        </Heading>
+        <Image src="/doge.png" height="128" />
+      </Box>
+    )
+
+    const firstBuy = (
+      <Box
+        grow
+        minHeight="100%"
+        alignHorizontal="center"
+        alignVertical="center"
+        alignItems="center"
+        alignContent="center"
+        backgroundColor="background"
+        padding="32"
+        paddingTop="64"
+        gap="32"
+      >
+        <Heading color="text" size="32" font="SF Pro Display" weight="800" align="center">
+          Do you want to make a first buy?
+        </Heading>
+        <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
+          <Column alignHorizontal="left" gap="4" alignVertical="center">
+            <Heading color="text" size="18" font="SF Pro Display" weight="600" align="center" wrap>
+              {state.name!!}
+            </Heading>
+            <Heading
+              color="text100"
+              size="18"
+              font="SF Pro Display"
+              weight="600"
+              align="center"
+              wrap
+            >
+              {state.symbol!!}
+            </Heading>
+            <Heading color="text" size="18" font="SF Pro Display" weight="600" align="center" wrap>
+              {formatter.format(state.totalSupply!!)}
+            </Heading>
+          </Column>
+          <Column alignHorizontal="right">
+            <Image src={avatar} height="96" width="96" borderRadius="8" objectFit="cover" />
+          </Column>
+        </Columns>
+        <Heading
+          color="invert"
+          size="24"
+          font="SF Pro Display"
+          weight="600"
+          align="center"
+          wrap="balance"
+        >
+          <span>This will make your coin discoverable by DEX</span>
+          <span>tools and will give you a head start over snipers</span>
+        </Heading>
+      </Box>
+    )
+
+    const summary = (
+      <Box
+        grow
+        minHeight="100%"
+        alignHorizontal="center"
+        alignVertical="center"
+        alignItems="center"
+        alignContent="center"
+        backgroundColor="background"
+        padding="32"
+        paddingTop="64"
+        gap="32"
+      >
+        <Heading color="text" size="32" font="SF Pro Display" weight="800" align="center">
+          LFG?
+        </Heading>
+        <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
+          <Column alignHorizontal="left" gap="4" alignVertical="center">
+            <Heading color="text" size="18" font="SF Pro Display" weight="600" align="center" wrap>
+              {state.name!!}
+            </Heading>
+            <Heading
+              color="text100"
+              size="18"
+              font="SF Pro Display"
+              weight="600"
+              align="center"
+              wrap
+            >
+              {state.symbol!!}
+            </Heading>
+            <Heading color="text" size="18" font="SF Pro Display" weight="600" align="center" wrap>
+              {formatter.format(state.totalSupply!!)}
+            </Heading>
+          </Column>
+          <Column alignHorizontal="right">
+            <Image src={avatar} height="96" width="96" borderRadius="8" objectFit="cover" />
+          </Column>
+        </Columns>
+        {state.firstBuy ? (
+          <Heading
+            color="invert"
+            size="24"
+            font="SF Pro Display"
+            weight="600"
+            align="center"
+            wrap="balance"
+          >
+            <span>{`You're getting ~${compactFormatter.format(firstBuyTokens)} ${state.symbol}`}</span>
+            <span>as a first buyer</span>
+          </Heading>
+        ) : (
+          <span></span>
+        )}
+      </Box>
+    )
+
     return c.res({
-      image: (
-        <>
-          {showDetails && (
-            <Box
-              grow
-              minHeight="100%"
-              alignHorizontal="center"
-              alignVertical="center"
-              alignItems="center"
-              alignContent="center"
-              backgroundColor="background"
-              padding="32"
-              paddingTop="64"
-              gap="32"
-            >
-              <Heading color="text" size="32" font="SF Pro Display" weight="800" align="center">
-                Let's get some details about your coin
-              </Heading>
-              <Columns gap="8" grow width="100%" paddingLeft="96" paddingRight="96">
-                <Column alignHorizontal="left" gap="12">
-                  <Heading
-                    color={!state.name ? 'invert' : 'text'}
-                    size="24"
-                    font="SF Pro Display"
-                    weight="600"
-                    align="center"
-                    wrap
-                  >
-                    Name
-                  </Heading>
-                  <Heading
-                    color={state.name && !state.symbol ? 'invert' : 'text'}
-                    size="24"
-                    font="SF Pro Display"
-                    weight="600"
-                    align="center"
-                    wrap
-                  >
-                    Symbol
-                  </Heading>
-                  <Heading
-                    color={state.name && state.symbol && !state.totalSupply ? 'invert' : 'text'}
-                    size="24"
-                    font="SF Pro Display"
-                    weight="600"
-                    align="center"
-                    wrap
-                  >
-                    Total Supply
-                  </Heading>
-                </Column>
-                <Column alignHorizontal="right" gap="12">
-                  <Heading
-                    color={!state.name ? 'text100' : 'text'}
-                    size="24"
-                    font="SF Pro Display"
-                    weight="600"
-                    align="center"
-                    wrap
-                  >
-                    {state.name || `eg 'dogwifhat'`}
-                  </Heading>
-                  <Heading
-                    color={!state.symbol ? 'text100' : 'text'}
-                    size="24"
-                    font="SF Pro Display"
-                    weight="600"
-                    align="center"
-                    wrap
-                  >
-                    {state.symbol || `eg '$WIF'`}
-                  </Heading>
-                  <Heading
-                    color={!state.totalSupply ? 'text100' : 'text'}
-                    size="24"
-                    font="SF Pro Display"
-                    weight="600"
-                    align="center"
-                    wrap
-                  >
-                    {state.totalSupply ? formatter.format(state.totalSupply) : `eg '420,000,000'`}
-                  </Heading>
-                </Column>
-              </Columns>
-            </Box>
-          )}
-          {showImage && (
-            <Box
-              grow
-              minHeight="100%"
-              alignHorizontal="center"
-              alignVertical="center"
-              alignItems="center"
-              alignContent="center"
-              backgroundColor="background"
-              padding="32"
-              paddingTop="64"
-              gap="32"
-            >
-              <Heading
-                color="text"
-                size="32"
-                font="SF Pro Display"
-                weight="800"
-                tracking="-2"
-                align="center"
-              >
-                Let's add a coin picture
-              </Heading>
-              <Image src="/doge.png" height="128" />
-            </Box>
-          )}
-          {showFirstBuy && (
-            <Box
-              grow
-              minHeight="100%"
-              alignHorizontal="center"
-              alignVertical="center"
-              alignItems="center"
-              alignContent="center"
-              backgroundColor="background"
-              padding="32"
-              paddingTop="64"
-              gap="32"
-            >
-              <Heading color="text" size="32" font="SF Pro Display" weight="800" align="center">
-                Do you want to make a first buy?
-              </Heading>
-              <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
-                <Column alignHorizontal="left" gap="4" alignVertical="center">
-                  <Heading
-                    color="text"
-                    size="18"
-                    font="SF Pro Display"
-                    weight="600"
-                    align="center"
-                    wrap
-                  >
-                    {state.name!!}
-                  </Heading>
-                  <Heading
-                    color="text100"
-                    size="18"
-                    font="SF Pro Display"
-                    weight="600"
-                    align="center"
-                    wrap
-                  >
-                    {state.symbol!!}
-                  </Heading>
-                  <Heading
-                    color="text"
-                    size="18"
-                    font="SF Pro Display"
-                    weight="600"
-                    align="center"
-                    wrap
-                  >
-                    {formatter.format(state.totalSupply!!)}
-                  </Heading>
-                </Column>
-                <Column alignHorizontal="right">
-                  <Image src={avatar} height="96" width="96" borderRadius="8" objectFit="cover" />
-                </Column>
-              </Columns>
-              <VStack gap="0">
-                <Heading
-                  color="invert"
-                  size="24"
-                  font="SF Pro Display"
-                  weight="600"
-                  align="center"
-                  wrap="balance"
-                >
-                  This will make your coin discoverable by DEX
-                </Heading>
-                <Heading
-                  color="invert"
-                  size="24"
-                  font="SF Pro Display"
-                  weight="600"
-                  align="center"
-                  wrap="balance"
-                >
-                  tools and will give you a head start over snipers
-                </Heading>
-              </VStack>
-            </Box>
-          )}
-          {showSummary && (
-            <Box
-              grow
-              minHeight="100%"
-              alignHorizontal="center"
-              alignVertical="center"
-              alignItems="center"
-              alignContent="center"
-              backgroundColor="background"
-              padding="32"
-              paddingTop="64"
-              gap="32"
-            >
-              <Heading color="text" size="32" font="SF Pro Display" weight="800" align="center">
-                LFG?
-              </Heading>
-              <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
-                <Column alignHorizontal="left" gap="4" alignVertical="center">
-                  <Heading
-                    color="text"
-                    size="18"
-                    font="SF Pro Display"
-                    weight="600"
-                    align="center"
-                    wrap
-                  >
-                    {state.name!!}
-                  </Heading>
-                  <Heading
-                    color="text100"
-                    size="18"
-                    font="SF Pro Display"
-                    weight="600"
-                    align="center"
-                    wrap
-                  >
-                    {state.symbol!!}
-                  </Heading>
-                  <Heading
-                    color="text"
-                    size="18"
-                    font="SF Pro Display"
-                    weight="600"
-                    align="center"
-                    wrap
-                  >
-                    {formatter.format(state.totalSupply!!)}
-                  </Heading>
-                </Column>
-                <Column alignHorizontal="right">
-                  <Image src={avatar} height="96" width="96" borderRadius="8" objectFit="cover" />
-                </Column>
-              </Columns>
-              {state.firstBuy ? (
-                <VStack gap="0">
-                  <Heading
-                    color="invert"
-                    size="24"
-                    font="SF Pro Display"
-                    weight="600"
-                    align="center"
-                    wrap="balance"
-                  >
-                    {`You're getting ~${compactFormatter.format(firstBuyTokens)} ${state.symbol}`}
-                  </Heading>
-                  <Heading
-                    color="invert"
-                    size="24"
-                    font="SF Pro Display"
-                    weight="600"
-                    align="center"
-                    wrap="balance"
-                  >
-                    as a first buyer
-                  </Heading>
-                </VStack>
-              ) : (
-                <></>
-              )}
-            </Box>
-          )}
-        </>
-      ),
+      title: 'FomoFactory - Mint New Coin',
+      image: showDetails ? details : showImage ? image : showFirstBuy ? firstBuy : summary,
       intents,
     })
   },
@@ -535,6 +466,7 @@ app.frame(
       : '/doge.png'
 
     return c.res({
+      title: `FomoFactory - ${state.symbol}`,
       image: (
         <Box
           grow
@@ -685,6 +617,7 @@ app.frame(
     const avatar = data.avatar ? await resizeImage(data.avatar, 128) : '/doge.png'
 
     return c.res({
+      title: `FomoFactory - ${data.symbol}`,
       image: (
         <Box
           grow
@@ -722,12 +655,6 @@ app.frame(
               </Heading>
             </Column>
             <Column alignHorizontal="right">
-              {/* <img
-                src={data.avatar || '/doge.png'}
-                height="96"
-                width="96"
-                style={{ borderRadius: '12px', objectFit: 'cover' }}
-              /> */}
               <Image src={avatar} height="96" width="96" borderRadius="8" objectFit="cover" />
             </Column>
           </Columns>
