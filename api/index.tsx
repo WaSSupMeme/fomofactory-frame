@@ -659,7 +659,7 @@ app.frame(
               </Heading>
             </Column>
             <Column alignHorizontal="right">
-              {/* <Image src={avatar} height="96" width="96" borderRadius="8" objectFit="cover" /> */}
+              <Image src={avatar} height="96" width="96" borderRadius="8" objectFit="cover" />
             </Column>
           </Columns>
           <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
