@@ -47,9 +47,9 @@ const client = createPublicClient({
 export const resizeImage = async (image: string, size: number, fileName?: string) => {
   const img = await Jimp.read(image)
   const name = fileName || image.substring(image.lastIndexOf('/') + 1)
-  const buffer = await img.cover(size, size).quality(50).getBufferAsync(Jimp.MIME_JPEG)
+  const buffer = await img.cover(size, size).quality(80).getBufferAsync(Jimp.MIME_JPEG)
   const formData = new FormData()
-  formData.append('file', new Blob([buffer]), `${name.split('.')[0]}.jpg`)
+  formData.append('file', new Blob([buffer]), `${name.split('.')[0].substring(22)}.jpg`)
   const resp = await fetch('https://tmpfiles.org/api/v1/upload', {
     method: 'POST',
     body: formData,
