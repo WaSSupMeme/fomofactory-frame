@@ -26,7 +26,7 @@ export const app = new Frog<{ State: Partial<State> }>({
   ui: { vars },
   assetsPath: '/',
   basePath: '/api',
-  browserLocation: '/:path',
+  browserLocation: process.env.VITE_APP_URL,
   initialState: {},
   hub: pinata(),
 })
@@ -36,6 +36,7 @@ app.frame(
   async (c) => {
     return c.res({
       title: 'FomoFactory',
+      browserLocation: process.env.VITE_APP_URL,
       image: (
         <Box
           grow
@@ -441,6 +442,7 @@ app.frame(
 
     return c.res({
       title: 'FomoFactory - Mint New Coin',
+      browserLocation: `${process.env.VITE_APP_URL}/coins/create`,
       image: showDetails ? details : showImage ? image : showFirstBuy ? firstBuy : summary,
       intents,
     })
@@ -467,6 +469,7 @@ app.frame(
 
     return c.res({
       title: `FomoFactory - ${state.symbol}`,
+      browserLocation: `${process.env.VITE_APP_URL}/coins/${state.address}`,
       image: (
         <Box
           grow
@@ -618,6 +621,7 @@ app.frame(
 
     return c.res({
       title: `FomoFactory - ${data.symbol}`,
+      browserLocation: `${process.env.VITE_APP_URL}/coins/${address}`,
       image: (
         <Box
           grow
