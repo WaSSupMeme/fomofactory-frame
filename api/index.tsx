@@ -703,7 +703,7 @@ app.frame(
                 >
                   {data.liquidity ? `$${compactFormatter.format(data.liquidity)}` : '-'}
                 </Heading>
-                {data.liquidity ? <Image src="/lock.png" height="16" /> : <span></span>}
+                {data.liquidity ? <Image src="/lock.png" height="16" /> : <br />}
               </HStack>
               <Heading
                 color="text100"
