@@ -34,7 +34,16 @@ app.frame(
   async (c) => {
     return c.res({
       image: (
-        <Box grow alignHorizontal="center" backgroundColor="background" padding="32">
+        <Box
+          grow
+          minHeight="100%"
+          alignHorizontal="center"
+          alignVertical="center"
+          alignItems="center"
+          alignContent="center"
+          backgroundColor="background"
+          padding="32"
+        >
           <VStack gap="12" alignHorizontal="center">
             <Image src="/logo.png" height="72" />
             <VStack gap="0" alignHorizontal="center">
@@ -231,7 +240,7 @@ app.frame(
           {showDetails && (
             <Box
               grow
-              height="100%"
+              minHeight="100%"
               alignHorizontal="center"
               alignVertical="center"
               alignItems="center"
@@ -328,7 +337,7 @@ app.frame(
           {showImage && (
             <Box
               grow
-              height="100%"
+              minHeight="100%"
               alignHorizontal="center"
               alignVertical="center"
               alignItems="center"
@@ -354,7 +363,7 @@ app.frame(
           {showFirstBuy && (
             <Box
               grow
-              height="100%"
+              minHeight="100%"
               alignHorizontal="center"
               alignVertical="center"
               alignItems="center"
@@ -449,7 +458,7 @@ app.frame(
           {showSummary && (
             <Box
               grow
-              height="100%"
+              minHeight="100%"
               alignHorizontal="center"
               alignVertical="center"
               alignItems="center"
@@ -571,7 +580,8 @@ app.frame(
       image: (
         <Box
           grow
-          height="100%"
+          flexDirection="column"
+          minHeight="100%"
           alignHorizontal="center"
           alignVertical="center"
           alignItems="center"
@@ -725,7 +735,7 @@ app.frame(
       image: (
         <Box
           grow
-          height="100%"
+          minHeight="100%"
           alignHorizontal="center"
           alignVertical="center"
           alignItems="center"
