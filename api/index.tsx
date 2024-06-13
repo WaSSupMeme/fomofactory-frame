@@ -71,9 +71,6 @@ app.frame(
           </h3>
         </div>
       ),
-      headers: {
-        'Content-Type': 'image/png',
-      },
       intents: [
         <Button action="/coins/create">Get Started</Button>,
         <Button.Link href="https://fomofactory.wtf/top">Top Coins</Button.Link>,
@@ -123,7 +120,7 @@ app.frame(
         return
       }
       if (buttonValue === 'back') {
-        if (previousState.firstBuy) {
+        if (previousState.firstBuy !== undefined) {
           delete previousState.firstBuy
           return
         }
@@ -156,6 +153,41 @@ app.frame(
       state.name && state.symbol && state.totalSupply && state.image && state.firstBuy === undefined
     const showSummary =
       state.name && state.symbol && state.totalSupply && state.image && state.firstBuy !== undefined
+
+    const intents = []
+    const textInputPlaceholder = !state.name
+      ? 'Enter your coin name...'
+      : !state.symbol
+        ? 'Enter your coin symbol...'
+        : !state.totalSupply
+          ? 'Enter total supply...'
+          : showImage
+            ? 'Paste image URL...'
+            : showFirstBuy
+              ? 'Custom amount of ETH (eg 0.01)'
+              : undefined
+    if (textInputPlaceholder) {
+      intents.push(<TextInput placeholder={textInputPlaceholder} />)
+    }
+    if (!state.name) {
+      intents.push(<Button action="/">Back</Button>)
+    } else {
+      intents.push(<Button value="back">Back</Button>)
+    }
+    if (showFirstBuy) {
+      intents.push(<Button value="0.001">0.001 ETH</Button>)
+      intents.push(<Button value="skip">Skip</Button>)
+    }
+    if (!showSummary) {
+      intents.push(<Button value="next">Next</Button>)
+    } else {
+      intents.push(
+        <Button.Transaction target="/deploy" action="/coins/created">
+          LFG
+        </Button.Transaction>,
+      )
+    }
+
     return c.res({
       image: (
         <div style={twj('flex flex-col grow bg-background font-body items-center justify-center')}>
@@ -293,35 +325,7 @@ app.frame(
           )}
         </div>
       ),
-      headers: {
-        'Content-Type': 'image/png',
-      },
-      intents: [
-        <TextInput
-          placeholder={
-            !state.name
-              ? 'Enter your coin name...'
-              : !state.symbol
-                ? 'Enter your coin symbol...'
-                : !state.totalSupply
-                  ? 'Enter total supply...'
-                  : showImage
-                    ? 'Paste image URL...'
-                    : showFirstBuy
-                      ? 'Custom amount of ETH (eg 0.01)'
-                      : ''
-          }
-        />,
-        !state.name ? <Button.Reset>Back</Button.Reset> : <Button value="back">Back</Button>,
-        showFirstBuy ? <Button value="0.001">0.001 ETH</Button> : null,
-        showFirstBuy ? <Button value="skip">Skip</Button> : null,
-        !showSummary ? <Button value="next">Next</Button> : null,
-        showSummary ? (
-          <Button.Transaction target="/deploy" action="/coins/created">
-            LFG
-          </Button.Transaction>
-        ) : null,
-      ],
+      intents,
     })
   },
   {
@@ -387,9 +391,6 @@ app.frame(
           </div>
         </div>
       ),
-      headers: {
-        'Content-Type': 'image/png',
-      },
       intents: [
         <TextInput placeholder={'Enter amount in ETH to buy...'} />,
         <Button action="/coins/create">New Coin</Button>,
@@ -464,9 +465,6 @@ app.frame(
           </div>
         </div>
       ),
-      headers: {
-        'Content-Type': 'image/png',
-      },
       intents: [
         <TextInput placeholder={'Enter amount in ETH to buy...'} />,
         <Button action="/coins/create">New Coin</Button>,
@@ -530,7 +528,7 @@ app.transaction('/buy/:address/:amount?', async (c) => {
 
 // @ts-ignore
 const isEdgeFunction = typeof EdgeFunction !== 'undefined'
-const isProduction = isEdgeFunction || process.env?.MODE !== 'development'
+const isProduction = isEdgeFunction || import.meta.env?.MODE !== 'development'
 devtools(app, isProduction ? { assetsPath: '/.frog' } : { serveStatic })
 
 export const GET = handle(app)
