@@ -57,6 +57,7 @@ export const resizeImage = async (image: string, size: number, fileName?: string
   const data = await resp.json()
   const url = data.data.url as string
   const path = `https://tmpfiles.org/dl${url.substring(url.indexOf('tmpfiles.org') + 12)}`
+  console.log(path)
   return path
 }
 
