@@ -1,10 +1,13 @@
 import { State } from '../types/state.js'
 
+import Jimp from 'jimp'
+
 import {
   createPublicClient,
   http,
   formatEther,
   formatUnits,
+  hashMessage,
   numberToHex,
   parseEther,
   parseEventLogs,
@@ -40,6 +43,24 @@ const client = createPublicClient({
   chain: base,
   transport: http(process.env.VITE_RPC_PROVIDER_URL),
 })
+
+export const resizeImage = async (image: string, size: number, fileName?: string) => {
+  const img = await Jimp.read(image)
+  const name = fileName || image.substring(image.lastIndexOf('/') + 1)
+  await img.contain(size, size).quality(60).writeAsync(`./${name}`)
+  return `/${name}`
+}
+
+export const stateHash = (state: Partial<State>) => {
+  return hashMessage(
+    JSON.stringify({
+      name: state.name,
+      symbol: state.symbol,
+      totalSupply: state.totalSupply,
+      image: state.image,
+    }),
+  ).substring(0, 42)
+}
 
 export const computeTokenAddress = async (creator: `0x${string}`, state: State) => {
   return await client.readContract({

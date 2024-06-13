@@ -15,7 +15,9 @@ import {
   fetchTokenData,
   getDeployedToken,
   prepareDeploy,
+  resizeImage,
   saveMetadata,
+  stateHash,
 } from '../util/token.js'
 
 import { FeeAmount } from '@uniswap/v3-sdk'
@@ -47,15 +49,15 @@ app.frame(
           <VStack gap="12" alignHorizontal="center">
             <Image src="/logo.png" height="72" />
             <VStack gap="0" alignHorizontal="center">
-              <Heading font="SF Pro Text" weight="800" size="48" tracking="-4" align="center">
+              <Heading font="SF Pro Display" weight="800" size="48" tracking="-2" align="center">
                 Create your
               </Heading>
               <HStack gap="0" alignHorizontal="center">
                 <Heading
-                  font="SF Pro Text"
+                  font="SF Pro Display"
                   weight="800"
                   size="48"
-                  tracking="-4"
+                  tracking="-2"
                   align="center"
                   wrap
                 >
@@ -63,10 +65,10 @@ app.frame(
                 </Heading>
                 <Spacer size="8" />
                 <Heading
-                  font="SF Pro Text"
+                  font="SF Pro Display"
                   weight="800"
                   size="48"
-                  tracking="-4"
+                  tracking="-2"
                   align="center"
                   color="invert"
                   wrap
@@ -84,9 +86,8 @@ app.frame(
               <Heading
                 color="text"
                 size="24"
-                font="SF Pro Text"
+                font="SF Pro Display"
                 weight="600"
-                tracking="-2"
                 align="center"
                 wrap
               >
@@ -95,9 +96,8 @@ app.frame(
               <Heading
                 color="text"
                 size="24"
-                font="SF Pro Text"
+                font="SF Pro Display"
                 weight="600"
-                tracking="-2"
                 align="center"
                 wrap
               >
@@ -234,6 +234,10 @@ app.frame(
       )
     }
 
+    const avatar = state.image
+      ? await resizeImage(state.image, 128, `${stateHash(state)}.png`)
+      : '/doge.png'
+
     return c.res({
       image: (
         <>
@@ -250,14 +254,7 @@ app.frame(
               paddingTop="64"
               gap="32"
             >
-              <Heading
-                color="text"
-                size="32"
-                font="SF Pro Text"
-                weight="800"
-                tracking="-2"
-                align="center"
-              >
+              <Heading color="text" size="32" font="SF Pro Display" weight="800" align="center">
                 Let's get some details about your coin
               </Heading>
               <Columns gap="8" grow width="100%" paddingLeft="96" paddingRight="96">
@@ -265,9 +262,8 @@ app.frame(
                   <Heading
                     color={!state.name ? 'invert' : 'text'}
                     size="24"
-                    font="SF Pro Text"
+                    font="SF Pro Display"
                     weight="600"
-                    tracking="-2"
                     align="center"
                     wrap
                   >
@@ -276,9 +272,8 @@ app.frame(
                   <Heading
                     color={state.name && !state.symbol ? 'invert' : 'text'}
                     size="24"
-                    font="SF Pro Text"
+                    font="SF Pro Display"
                     weight="600"
-                    tracking="-2"
                     align="center"
                     wrap
                   >
@@ -287,9 +282,8 @@ app.frame(
                   <Heading
                     color={state.name && state.symbol && !state.totalSupply ? 'invert' : 'text'}
                     size="24"
-                    font="SF Pro Text"
+                    font="SF Pro Display"
                     weight="600"
-                    tracking="-2"
                     align="center"
                     wrap
                   >
@@ -300,9 +294,8 @@ app.frame(
                   <Heading
                     color={!state.name ? 'text100' : 'text'}
                     size="24"
-                    font="SF Pro Text"
+                    font="SF Pro Display"
                     weight="600"
-                    tracking="-2"
                     align="center"
                     wrap
                   >
@@ -311,9 +304,8 @@ app.frame(
                   <Heading
                     color={!state.symbol ? 'text100' : 'text'}
                     size="24"
-                    font="SF Pro Text"
+                    font="SF Pro Display"
                     weight="600"
-                    tracking="-2"
                     align="center"
                     wrap
                   >
@@ -322,9 +314,8 @@ app.frame(
                   <Heading
                     color={!state.totalSupply ? 'text100' : 'text'}
                     size="24"
-                    font="SF Pro Text"
+                    font="SF Pro Display"
                     weight="600"
-                    tracking="-2"
                     align="center"
                     wrap
                   >
@@ -350,7 +341,7 @@ app.frame(
               <Heading
                 color="text"
                 size="32"
-                font="SF Pro Text"
+                font="SF Pro Display"
                 weight="800"
                 tracking="-2"
                 align="center"
@@ -373,14 +364,7 @@ app.frame(
               paddingTop="64"
               gap="32"
             >
-              <Heading
-                color="text"
-                size="32"
-                font="SF Pro Text"
-                weight="800"
-                tracking="-2"
-                align="center"
-              >
+              <Heading color="text" size="32" font="SF Pro Display" weight="800" align="center">
                 Do you want to make a first buy?
               </Heading>
               <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
@@ -388,9 +372,8 @@ app.frame(
                   <Heading
                     color="text"
                     size="18"
-                    font="SF Pro Text"
+                    font="SF Pro Display"
                     weight="600"
-                    tracking="-2"
                     align="center"
                     wrap
                   >
@@ -399,9 +382,8 @@ app.frame(
                   <Heading
                     color="text100"
                     size="18"
-                    font="SF Pro Text"
+                    font="SF Pro Display"
                     weight="600"
-                    tracking="-2"
                     align="center"
                     wrap
                   >
@@ -410,9 +392,8 @@ app.frame(
                   <Heading
                     color="text"
                     size="18"
-                    font="SF Pro Text"
+                    font="SF Pro Display"
                     weight="600"
-                    tracking="-2"
                     align="center"
                     wrap
                   >
@@ -420,22 +401,15 @@ app.frame(
                   </Heading>
                 </Column>
                 <Column alignHorizontal="right">
-                  <Image
-                    src={state.image || '/doge.png'}
-                    height="96"
-                    width="96"
-                    borderRadius="8"
-                    objectFit="cover"
-                  />
+                  <Image src={avatar} height="96" width="96" borderRadius="8" objectFit="cover" />
                 </Column>
               </Columns>
               <VStack gap="0">
                 <Heading
                   color="invert"
                   size="24"
-                  font="SF Pro Text"
+                  font="SF Pro Display"
                   weight="600"
-                  tracking="-2"
                   align="center"
                   wrap="balance"
                 >
@@ -444,9 +418,8 @@ app.frame(
                 <Heading
                   color="invert"
                   size="24"
-                  font="SF Pro Text"
+                  font="SF Pro Display"
                   weight="600"
-                  tracking="-2"
                   align="center"
                   wrap="balance"
                 >
@@ -468,14 +441,7 @@ app.frame(
               paddingTop="64"
               gap="32"
             >
-              <Heading
-                color="text"
-                size="32"
-                font="SF Pro Text"
-                weight="800"
-                tracking="-2"
-                align="center"
-              >
+              <Heading color="text" size="32" font="SF Pro Display" weight="800" align="center">
                 LFG?
               </Heading>
               <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
@@ -483,9 +449,8 @@ app.frame(
                   <Heading
                     color="text"
                     size="18"
-                    font="SF Pro Text"
+                    font="SF Pro Display"
                     weight="600"
-                    tracking="-2"
                     align="center"
                     wrap
                   >
@@ -494,9 +459,8 @@ app.frame(
                   <Heading
                     color="text100"
                     size="18"
-                    font="SF Pro Text"
+                    font="SF Pro Display"
                     weight="600"
-                    tracking="-2"
                     align="center"
                     wrap
                   >
@@ -505,9 +469,8 @@ app.frame(
                   <Heading
                     color="text"
                     size="18"
-                    font="SF Pro Text"
+                    font="SF Pro Display"
                     weight="600"
-                    tracking="-2"
                     align="center"
                     wrap
                   >
@@ -515,13 +478,7 @@ app.frame(
                   </Heading>
                 </Column>
                 <Column alignHorizontal="right">
-                  <Image
-                    src={state.image || '/doge.png'}
-                    height="96"
-                    width="96"
-                    borderRadius="8"
-                    objectFit="cover"
-                  />
+                  <Image src={avatar} height="96" width="96" borderRadius="8" objectFit="cover" />
                 </Column>
               </Columns>
               {state.firstBuy ? (
@@ -529,9 +486,8 @@ app.frame(
                   <Heading
                     color="invert"
                     size="24"
-                    font="SF Pro Text"
+                    font="SF Pro Display"
                     weight="600"
-                    tracking="-2"
                     align="center"
                     wrap="balance"
                   >
@@ -540,9 +496,8 @@ app.frame(
                   <Heading
                     color="invert"
                     size="24"
-                    font="SF Pro Text"
+                    font="SF Pro Display"
                     weight="600"
-                    tracking="-2"
                     align="center"
                     wrap="balance"
                   >
@@ -575,6 +530,9 @@ app.frame(
     })
     const firstBuyUsd = await fetchEthUsdAmount(state.firstBuy || 0)
     const liquidity = Number(process.env.VITE_USD_MARKET_CAP) - firstBuyUsd
+    const avatar = state.image
+      ? await resizeImage(state.image, 128, `${state.address}.png`)
+      : '/doge.png'
 
     return c.res({
       image: (
@@ -596,7 +554,7 @@ app.frame(
               <Heading
                 color="text"
                 size="18"
-                font="SF Pro Text"
+                font="SF Pro Display"
                 weight="600"
                 tracking="-1"
                 align="center"
@@ -607,7 +565,7 @@ app.frame(
               <Heading
                 color="text100"
                 size="18"
-                font="SF Pro Text"
+                font="SF Pro Display"
                 weight="600"
                 tracking="-1"
                 align="center"
@@ -617,13 +575,7 @@ app.frame(
               </Heading>
             </Column>
             <Column alignHorizontal="right">
-              <Image
-                src={state.image || '/doge.png'}
-                height="96"
-                width="96"
-                borderRadius="8"
-                objectFit="cover"
-              />
+              <Image src={avatar} height="96" width="96" borderRadius="8" objectFit="cover" />
             </Column>
           </Columns>
           <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
@@ -631,7 +583,7 @@ app.frame(
               <Heading
                 color="invert"
                 size="18"
-                font="SF Pro Text"
+                font="SF Pro Display"
                 weight="600"
                 tracking="-1"
                 align="center"
@@ -642,7 +594,7 @@ app.frame(
               <Heading
                 color="invert"
                 size="18"
-                font="SF Pro Text"
+                font="SF Pro Display"
                 weight="600"
                 tracking="-1"
                 align="center"
@@ -653,7 +605,7 @@ app.frame(
               <Heading
                 color="invert"
                 size="18"
-                font="SF Pro Text"
+                font="SF Pro Display"
                 weight="600"
                 tracking="-1"
                 align="center"
@@ -667,7 +619,7 @@ app.frame(
                 <Heading
                   color="text100"
                   size="18"
-                  font="SF Pro Text"
+                  font="SF Pro Display"
                   weight="600"
                   tracking="-1"
                   align="center"
@@ -680,7 +632,7 @@ app.frame(
               <Heading
                 color="text100"
                 size="18"
-                font="SF Pro Text"
+                font="SF Pro Display"
                 weight="600"
                 tracking="-1"
                 align="center"
@@ -691,7 +643,7 @@ app.frame(
               <Heading
                 color="text100"
                 size="18"
-                font="SF Pro Text"
+                font="SF Pro Display"
                 weight="600"
                 tracking="-1"
                 align="center"
@@ -730,6 +682,7 @@ app.frame(
     const { address } = c.req.param()
 
     const data = await fetchTokenData(address as `0x${string}`)
+    const avatar = data.avatar ? await resizeImage(data.avatar, 128) : '/doge.png'
 
     return c.res({
       image: (
@@ -750,9 +703,8 @@ app.frame(
               <Heading
                 color="text"
                 size="18"
-                font="SF Pro Text"
+                font="SF Pro Display"
                 weight="600"
-                tracking="-1"
                 align="center"
                 wrap
               >
@@ -761,9 +713,8 @@ app.frame(
               <Heading
                 color="text100"
                 size="18"
-                font="SF Pro Text"
+                font="SF Pro Display"
                 weight="600"
-                tracking="-1"
                 align="center"
                 wrap
               >
@@ -771,13 +722,13 @@ app.frame(
               </Heading>
             </Column>
             <Column alignHorizontal="right">
-              <Image
+              {/* <img
                 src={data.avatar || '/doge.png'}
                 height="96"
                 width="96"
-                borderRadius="8"
-                objectFit="cover"
-              />
+                style={{ borderRadius: '12px', objectFit: 'cover' }}
+              /> */}
+              <Image src={avatar} height="96" width="96" borderRadius="8" objectFit="cover" />
             </Column>
           </Columns>
           <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
@@ -785,9 +736,8 @@ app.frame(
               <Heading
                 color="invert"
                 size="18"
-                font="SF Pro Text"
+                font="SF Pro Display"
                 weight="600"
-                tracking="-1"
                 align="center"
                 wrap
               >
@@ -796,9 +746,8 @@ app.frame(
               <Heading
                 color="invert"
                 size="18"
-                font="SF Pro Text"
+                font="SF Pro Display"
                 weight="600"
-                tracking="-1"
                 align="center"
                 wrap
               >
@@ -807,9 +756,8 @@ app.frame(
               <Heading
                 color="invert"
                 size="18"
-                font="SF Pro Text"
+                font="SF Pro Display"
                 weight="600"
-                tracking="-1"
                 align="center"
                 wrap
               >
@@ -821,9 +769,8 @@ app.frame(
                 <Heading
                   color="text100"
                   size="18"
-                  font="SF Pro Text"
+                  font="SF Pro Display"
                   weight="600"
-                  tracking="-1"
                   align="center"
                   wrap
                 >
@@ -834,9 +781,8 @@ app.frame(
               <Heading
                 color="text100"
                 size="18"
-                font="SF Pro Text"
+                font="SF Pro Display"
                 weight="600"
-                tracking="-1"
                 align="center"
                 wrap
               >
@@ -845,9 +791,8 @@ app.frame(
               <Heading
                 color="text100"
                 size="18"
-                font="SF Pro Text"
+                font="SF Pro Display"
                 weight="600"
-                tracking="-1"
                 align="center"
                 wrap
               >

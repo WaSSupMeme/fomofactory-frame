@@ -27,6 +27,18 @@ const sfProTextBoldFont = fs.readFile(
   path.join(path.resolve(process.cwd(), 'public'), 'SF-Pro-Text-Bold.ttf'),
 )
 
+const sfProDisplayRegularFont = fs.readFile(
+  path.join(path.resolve(process.cwd(), 'public'), 'SF-Pro-Display-Medium.ttf'),
+)
+
+const sfProDisplaySemiboldFont = fs.readFile(
+  path.join(path.resolve(process.cwd(), 'public'), 'SF-Pro-Display-Bold.ttf'),
+)
+
+const sfProDisplayBoldFont = fs.readFile(
+  path.join(path.resolve(process.cwd(), 'public'), 'SF-Pro-Display-Heavy.ttf'),
+)
+
 export const fonts = async (): Promise<any> => {
   const [
     sfProRoundedRegularFontData,
@@ -35,6 +47,9 @@ export const fonts = async (): Promise<any> => {
     sfProTextRegularFontData,
     sfProTextSemiboldFontData,
     sfProTextBoldFontData,
+    sfProDisplayRegularFontData,
+    sfProDisplaySemiboldFontData,
+    sfProDisplayBoldFontData,
   ] = await Promise.all([
     sfProRoundedRegularFont,
     sfProRoundedSemiboldFont,
@@ -42,6 +57,9 @@ export const fonts = async (): Promise<any> => {
     sfProTextRegularFont,
     sfProTextSemiboldFont,
     sfProTextBoldFont,
+    sfProDisplayRegularFont,
+    sfProDisplaySemiboldFont,
+    sfProDisplayBoldFont,
   ])
   return {
     'SF Pro Rounded': [
@@ -76,6 +94,23 @@ export const fonts = async (): Promise<any> => {
         name: 'SF Pro Text',
         weight: 800,
         data: sfProTextBoldFontData,
+      },
+    ],
+    'SF Pro Display': [
+      {
+        name: 'SF Pro Display',
+        weight: 400,
+        data: sfProDisplayRegularFontData,
+      },
+      {
+        name: 'SF Pro Display',
+        weight: 600,
+        data: sfProDisplaySemiboldFontData,
+      },
+      {
+        name: 'SF Pro Display',
+        weight: 800,
+        data: sfProDisplayBoldFontData,
       },
     ],
   }
