@@ -49,7 +49,8 @@ app.frame(
           padding="32"
         >
           <VStack gap="12" alignHorizontal="center">
-            <Image src="/logo.jpg" height="72" />
+            <Image src="/logo.jpg" height="40" />
+            <Spacer size="4" />
             <VStack gap="0" alignHorizontal="center">
               <Heading font="SF Pro Display" weight="800" size="48" tracking="-2" align="center">
                 Create your
@@ -483,7 +484,7 @@ app.frame(
           padding="32"
           gap="16"
         >
-          <Image src="/logo.jpg" height="72" />
+          <Image src="/logo.jpg" height="32" />
           <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
             <Column alignHorizontal="left" gap="8" alignVertical="center">
               <Heading
@@ -634,7 +635,7 @@ app.frame(
           padding="32"
           gap="16"
         >
-          <Image src="/logo.jpg" height="72" />
+          <Image src="/logo.jpg" height="32" />
           <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
             <Column alignHorizontal="left" gap="8" alignVertical="center">
               <Heading
