@@ -622,15 +622,15 @@
   resolved "https://registry.yarnpkg.com/@fastify/busboy/-/busboy-2.1.1.tgz#b9da6a878a371829a0502c9b6c1c143ef6663f4d"
   integrity sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==
 
-"@hono/node-server@^1.8.2":
-  version "1.11.2"
-  resolved "https://registry.yarnpkg.com/@hono/node-server/-/node-server-1.11.2.tgz#260df84dece220a50ee2c2a469d24df223095b9d"
-  integrity sha512-JhX0nUC66GeDxpIdMKWDRMEwtQBa64CY907iAF1sYqb4m2p2PdSU7zkbnNhAZLg/6IjSlTuj6CF307JlBXVvpg==
+"@hono/node-server@^1.11.2":
+  version "1.11.3"
+  resolved "https://registry.yarnpkg.com/@hono/node-server/-/node-server-1.11.3.tgz#9d8b271795c07865d01e4c9a665d166c541bfb4e"
+  integrity sha512-mFg3qlKkDtMWSalX5Gyh6Zd3MXay0biGobFlyJ49i6R1smBBS1CYkNZbvwLlw+4sSrHO4ZiH7kj4TcLpl2Jr3g==
 
-"@hono/valibot-validator@^0.2.2":
-  version "0.2.5"
-  resolved "https://registry.yarnpkg.com/@hono/valibot-validator/-/valibot-validator-0.2.5.tgz#a65ae8b0306cc1864f2cab911e000b4ca18d3305"
-  integrity sha512-3XWssyNMiMKfsbHHpS3ykUWbIJlfdVML+io7MOr0IQ8VFf9cHdijw8jEaYPh92B3MxfFByOUPe/nY52JRq3VuQ==
+"@hono/valibot-validator@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@hono/valibot-validator/-/valibot-validator-0.3.0.tgz#8c4c3f4a1ba8d5df54c71ed97597075393e7d054"
+  integrity sha512-EcGJKzLt11SK4K11yKHrhI93ECtKeSHAnnENHw5tCL0ZhyDIx96avc3Ua8/ri4fwVvRPuOzFQ2OBRsVvwZuqeQ==
 
 "@isaacs/cliui@^8.0.2":
   version "8.0.2"
@@ -2626,14 +2626,14 @@ form-data@^4.0.0:
     combined-stream "^1.0.8"
     mime-types "^2.1.12"
 
-frog@latest:
-  version "0.11.6"
-  resolved "https://registry.yarnpkg.com/frog/-/frog-0.11.6.tgz#eee45030c3a865b51ddaee456049f168244730f6"
-  integrity sha512-aS9SEHJpP+GXy8e1Qe3HTJaEbWX6NIGHa2dVuytWE28+vW7HCBM7EbIfkM9w8ZJF6yAck1fMC4OvTx+047hkYQ==
+frog@^0.11.7:
+  version "0.11.7"
+  resolved "https://registry.yarnpkg.com/frog/-/frog-0.11.7.tgz#b406d5ccbab13fd6a4f7de16682060e491b52cb7"
+  integrity sha512-gbkHaeiZa+m+VW22/Gv07npMN9SXjbT5LoxKsljDVXzl9XKlWp+VpW3UGjKaHMA/C+iWjp8TWzE5HA/VBp/uRQ==
   dependencies:
     "@bufbuild/protobuf" "^1.7.2"
-    "@hono/node-server" "^1.8.2"
-    "@hono/valibot-validator" "^0.2.2"
+    "@hono/node-server" "^1.11.2"
+    "@hono/valibot-validator" "^0.3.0"
     "@noble/curves" "^1.3.0"
     "@noble/hashes" "^1.3.3"
     cac "^6.7.14"
