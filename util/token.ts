@@ -13,7 +13,7 @@ import {
   parseEventLogs,
   parseUnits,
 } from 'viem'
-import { base } from 'viem/chains'
+import { baseSepolia } from 'viem/chains'
 
 import { FeeAmount } from '@uniswap/v3-sdk'
 
@@ -22,6 +22,7 @@ import {
   erc20Abi,
   fomoFactoryAbi,
   iUniswapV3FactoryAbi,
+  iUniswapV3PoolAbi,
 } from '../abi/generated.js'
 
 const avatarFileName = (address: `0x${string}`, imageName: string) => {
@@ -40,8 +41,8 @@ function calculateInitialTick(totalSupply: number, marketCap: number, tickSpacin
 }
 
 const client = createPublicClient({
-  chain: base,
-  transport: http(process.env.VITE_RPC_PROVIDER_URL),
+  chain: baseSepolia,
+  transport: http(),
 })
 
 export const resizeImage = async (image: string, size: number, fileName?: string) => {
@@ -57,7 +58,6 @@ export const resizeImage = async (image: string, size: number, fileName?: string
   const data = await resp.json()
   const url = data.data.url as string
   const path = `https://tmpfiles.org/dl${url.substring(url.indexOf('tmpfiles.org') + 12)}`
-  console.log(path)
   return path
 }
 
@@ -97,7 +97,7 @@ export const saveMetadata = async (address: `0x${string}`, state: State) => {
     name: address,
     keyvalues: {
       fileName: fileName,
-      chainId: base.id,
+      chainId: baseSepolia.id,
       description: state.name,
     },
   })
@@ -206,15 +206,7 @@ export const getDeployedToken = async (txHash: `0x${string}`) => {
     logs: receipt.logs,
   })
 
-  const event = logs[0]!.args as {
-    creator: `0x${string}`
-    memecoin: `0x${string}`
-    name: string
-    symbol: string
-    totalSupply: bigint
-  }
-
-  return event.memecoin
+  return logs[0]!.args.memecoin
 }
 
 interface TokensMetadata {
@@ -424,4 +416,16 @@ export const fetchTokenData = async (address: `0x${string}`) => {
     description: metadata?.description,
     ...dex,
   }
+}
+
+export const getSwapData = async (txHash: `0x${string}`) => {
+  const receipt = await client.waitForTransactionReceipt({ hash: txHash })
+
+  const logs = parseEventLogs({
+    abi: iUniswapV3PoolAbi,
+    eventName: 'Swap',
+    logs: receipt.logs,
+  })
+
+  return logs[0]!.args
 }

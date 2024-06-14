@@ -3,6 +3,7 @@ import { pinata } from 'frog/hubs'
 import { devtools } from 'frog/dev'
 import { serveStatic } from 'frog/serve-static'
 import { handle } from 'frog/vercel'
+import { formatUnits } from 'viem'
 
 import { fonts, formatter, compactFormatter, Spacer, HStack } from '../ui/ui.js'
 import { Box, Columns, Column, Heading, Image, VStack, vars } from '../ui/ui.js'
@@ -14,6 +15,7 @@ import {
   fetchEthUsdAmount,
   fetchTokenData,
   getDeployedToken,
+  getSwapData,
   prepareDeploy,
   resizeImage,
   saveMetadata,
@@ -28,6 +30,10 @@ export const app = new Frog<{ State: Partial<State> }>({
   basePath: '/api',
   browserLocation: process.env.VITE_APP_URL,
   initialState: {},
+  imageOptions: {
+    height: 400,
+    width: 764,
+  },
   hub: pinata(),
 })
 
@@ -49,16 +55,18 @@ app.frame(
           padding="32"
         >
           <VStack gap="12" alignHorizontal="center">
-            <Image src="/logo.jpg" height="40" />
+            <Heading color="invert" size="48" font="Asgard Wide" weight="900" align="center">
+              FomoFactory
+            </Heading>
             <Spacer size="4" />
             <VStack gap="0" alignHorizontal="center">
-              <Heading font="SF Pro Display" weight="800" size="48" tracking="-2" align="center">
+              <Heading font="SF Pro Display" weight="900" size="48" tracking="-2" align="center">
                 Create your
               </Heading>
               <HStack gap="8" alignHorizontal="center">
                 <Heading
                   font="SF Pro Display"
-                  weight="800"
+                  weight="900"
                   size="48"
                   tracking="-2"
                   align="center"
@@ -69,7 +77,7 @@ app.frame(
                 <Image src="/base.png" height="42" />
                 <Heading
                   font="SF Pro Display"
-                  weight="800"
+                  weight="900"
                   size="48"
                   tracking="-2"
                   align="center"
@@ -81,7 +89,15 @@ app.frame(
               </HStack>
             </VStack>
             <Spacer size="4" />
-            <Heading color="text" size="24" font="SF Pro Display" weight="600" align="center" wrap>
+            <Heading
+              color="text"
+              size="24"
+              font="SF Pro Text"
+              weight="500"
+              align="center"
+              tracking="-1"
+              wrap
+            >
               <span>Deploy a contract, add liquidity and</span>
               <span>bootstrap trading with one click</span>
             </Heading>
@@ -232,17 +248,18 @@ app.frame(
         paddingTop="64"
         gap="32"
       >
-        <Heading color="text" size="32" font="SF Pro Display" weight="800" align="center">
+        <Heading color="text" size="32" font="SF Pro Display" weight="900" align="center">
           Let's get some details about your coin
         </Heading>
-        <Columns gap="8" grow width="100%" paddingLeft="96" paddingRight="96">
+        <Columns gap="8" grow width="100%" paddingLeft="80" paddingRight="80">
           <Column alignHorizontal="left" gap="12">
             <Heading
               color={!state.name ? 'invert' : 'text'}
               size="24"
-              font="SF Pro Display"
-              weight="600"
+              font="SF Pro Rounded"
+              weight="700"
               align="center"
+              tracking="0"
               wrap
             >
               Name
@@ -250,9 +267,10 @@ app.frame(
             <Heading
               color={state.name && !state.symbol ? 'invert' : 'text'}
               size="24"
-              font="SF Pro Display"
-              weight="600"
+              font="SF Pro Rounded"
+              weight="700"
               align="center"
+              tracking="0"
               wrap
             >
               Symbol
@@ -260,9 +278,10 @@ app.frame(
             <Heading
               color={state.name && state.symbol && !state.totalSupply ? 'invert' : 'text'}
               size="24"
-              font="SF Pro Display"
-              weight="600"
+              font="SF Pro Rounded"
+              weight="700"
               align="center"
+              tracking="0"
               wrap
             >
               Total Supply
@@ -272,9 +291,10 @@ app.frame(
             <Heading
               color={!state.name ? 'text100' : 'text'}
               size="24"
-              font="SF Pro Display"
-              weight="600"
+              font="SF Pro Rounded"
+              weight="700"
               align="center"
+              tracking="0"
               wrap
             >
               {state.name || `eg 'dogwifhat'`}
@@ -282,9 +302,10 @@ app.frame(
             <Heading
               color={!state.symbol ? 'text100' : 'text'}
               size="24"
-              font="SF Pro Display"
-              weight="600"
+              font="SF Pro Rounded"
+              weight="700"
               align="center"
+              tracking="0"
               wrap
             >
               {state.symbol || `eg '$WIF'`}
@@ -292,9 +313,10 @@ app.frame(
             <Heading
               color={!state.totalSupply ? 'text100' : 'text'}
               size="24"
-              font="SF Pro Display"
-              weight="600"
+              font="SF Pro Rounded"
+              weight="700"
               align="center"
+              tracking="0"
               wrap
             >
               {state.totalSupply ? formatter.format(state.totalSupply) : `eg '420,000,000'`}
@@ -317,17 +339,21 @@ app.frame(
         paddingTop="64"
         gap="32"
       >
-        <Heading
-          color="text"
-          size="32"
-          font="SF Pro Display"
-          weight="800"
-          tracking="-2"
-          align="center"
-        >
+        <Heading color="text" size="32" font="SF Pro Display" weight="900" align="center">
           Let's add a coin picture
         </Heading>
         <Image src="/doge.png" height="128" />
+        <Heading
+          color="invert"
+          size="24"
+          font="SF Pro Display"
+          weight="700"
+          align="center"
+          tracking="0"
+          wrap="balance"
+        >
+          PNG, JPG or GIF
+        </Heading>
       </Box>
     )
 
@@ -344,25 +370,49 @@ app.frame(
         paddingTop="64"
         gap="32"
       >
-        <Heading color="text" size="32" font="SF Pro Display" weight="800" align="center">
+        <Heading
+          color="text"
+          size="32"
+          font="SF Pro Display"
+          weight="900"
+          tracking="0"
+          align="center"
+        >
           Do you want to make a first buy?
         </Heading>
         <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
           <Column alignHorizontal="left" gap="4" alignVertical="center">
-            <Heading color="text" size="18" font="SF Pro Display" weight="600" align="center" wrap>
+            <Heading
+              color="text"
+              size="18"
+              font="SF Pro Rounded"
+              weight="700"
+              align="center"
+              tracking="0"
+              wrap
+            >
               {state.name!!}
             </Heading>
             <Heading
               color="text100"
               size="18"
-              font="SF Pro Display"
-              weight="600"
+              font="SF Pro Rounded"
+              weight="700"
               align="center"
+              tracking="0"
               wrap
             >
               {state.symbol!!}
             </Heading>
-            <Heading color="text" size="18" font="SF Pro Display" weight="600" align="center" wrap>
+            <Heading
+              color="text"
+              size="18"
+              font="SF Pro Rounded"
+              weight="700"
+              align="center"
+              tracking="0"
+              wrap
+            >
               {formatter.format(state.totalSupply!!)}
             </Heading>
           </Column>
@@ -374,8 +424,9 @@ app.frame(
           color="invert"
           size="24"
           font="SF Pro Display"
-          weight="600"
+          weight="700"
           align="center"
+          tracking="0"
           wrap="balance"
         >
           <span>This will make your coin discoverable by DEX</span>
@@ -397,25 +448,49 @@ app.frame(
         paddingTop="64"
         gap="32"
       >
-        <Heading color="text" size="32" font="SF Pro Display" weight="800" align="center">
+        <Heading
+          color="text"
+          size="32"
+          font="SF Pro Display"
+          weight="900"
+          tracking="0"
+          align="center"
+        >
           LFG?
         </Heading>
         <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
           <Column alignHorizontal="left" gap="4" alignVertical="center">
-            <Heading color="text" size="18" font="SF Pro Display" weight="600" align="center" wrap>
+            <Heading
+              color="text"
+              size="18"
+              font="SF Pro Rounded"
+              weight="700"
+              tracking="0"
+              align="center"
+              wrap
+            >
               {state.name!!}
             </Heading>
             <Heading
               color="text100"
               size="18"
-              font="SF Pro Display"
-              weight="600"
+              font="SF Pro Rounded"
+              weight="700"
               align="center"
+              tracking="0"
               wrap
             >
               {state.symbol!!}
             </Heading>
-            <Heading color="text" size="18" font="SF Pro Display" weight="600" align="center" wrap>
+            <Heading
+              color="text"
+              size="18"
+              font="SF Pro Rounded"
+              weight="700"
+              align="center"
+              tracking="0"
+              wrap
+            >
               {formatter.format(state.totalSupply!!)}
             </Heading>
           </Column>
@@ -428,8 +503,9 @@ app.frame(
             color="invert"
             size="24"
             font="SF Pro Display"
-            weight="600"
+            weight="700"
             align="center"
+            tracking="0"
             wrap="balance"
           >
             <span>{`You're getting ~${compactFormatter.format(firstBuyTokens)} ${state.symbol}`}</span>
@@ -484,15 +560,17 @@ app.frame(
           padding="32"
           gap="16"
         >
-          <Image src="/logo.jpg" height="32" />
+          <Heading color="invert" size="32" font="Asgard Wide" weight="900" align="center">
+            FomoFactory
+          </Heading>
           <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
             <Column alignHorizontal="left" gap="8" alignVertical="center">
               <Heading
                 color="text"
                 size="18"
-                font="SF Pro Display"
-                weight="600"
-                tracking="-1"
+                font="SF Pro Rounded"
+                weight="700"
+                tracking="0"
                 align="center"
                 wrap
               >
@@ -501,9 +579,9 @@ app.frame(
               <Heading
                 color="text100"
                 size="18"
-                font="SF Pro Display"
-                weight="600"
-                tracking="-1"
+                font="SF Pro Rounded"
+                weight="700"
+                tracking="0"
                 align="center"
                 wrap
               >
@@ -519,9 +597,9 @@ app.frame(
               <Heading
                 color="invert"
                 size="18"
-                font="SF Pro Display"
-                weight="600"
-                tracking="-1"
+                font="SF Pro Rounded"
+                weight="700"
+                tracking="0"
                 align="center"
                 wrap
               >
@@ -530,9 +608,9 @@ app.frame(
               <Heading
                 color="invert"
                 size="18"
-                font="SF Pro Display"
-                weight="600"
-                tracking="-1"
+                font="SF Pro Rounded"
+                weight="700"
+                tracking="0"
                 align="center"
                 wrap
               >
@@ -541,9 +619,9 @@ app.frame(
               <Heading
                 color="invert"
                 size="18"
-                font="SF Pro Display"
-                weight="600"
-                tracking="-1"
+                font="SF Pro Rounded"
+                weight="700"
+                tracking="0"
                 align="center"
                 wrap
               >
@@ -555,9 +633,9 @@ app.frame(
                 <Heading
                   color="text100"
                   size="18"
-                  font="SF Pro Display"
-                  weight="600"
-                  tracking="-1"
+                  font="SF Pro Rounded"
+                  weight="700"
+                  tracking="0"
                   align="center"
                   wrap
                 >
@@ -568,9 +646,9 @@ app.frame(
               <Heading
                 color="text100"
                 size="18"
-                font="SF Pro Display"
-                weight="600"
-                tracking="-1"
+                font="SF Pro Rounded"
+                weight="700"
+                tracking="0"
                 align="center"
                 wrap
               >
@@ -579,9 +657,9 @@ app.frame(
               <Heading
                 color="text100"
                 size="18"
-                font="SF Pro Display"
-                weight="600"
-                tracking="-1"
+                font="SF Pro Rounded"
+                weight="700"
+                tracking="0"
                 align="center"
                 wrap
               >
@@ -595,12 +673,12 @@ app.frame(
         <TextInput placeholder={'Enter amount in ETH to buy...'} />,
         <Button action="/coins/create">New Coin</Button>,
         <Button.Link href={`https://fomofactory.wtf/coins/${state.address}`}>Chart</Button.Link>,
-        <Button.Transaction target={`/buy/${state.address}`} action={`/coins/${state.address}`}>
+        <Button.Transaction target={`/buy/${state.address}/buy`} action={`/coins/${state.address}`}>
           Buy
         </Button.Transaction>,
         <Button.Transaction
           target={`/buy/${state.address}/0.01`}
-          action={`/coins/${state.address}`}
+          action={`/coins/${state.address}/buy`}
         >
           0.01 ETH
         </Button.Transaction>,
@@ -635,15 +713,18 @@ app.frame(
           padding="32"
           gap="16"
         >
-          <Image src="/logo.jpg" height="32" />
+          <Heading color="invert" size="32" font="Asgard Wide" weight="900" align="center">
+            FomoFactory
+          </Heading>
           <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
             <Column alignHorizontal="left" gap="8" alignVertical="center">
               <Heading
                 color="text"
                 size="18"
-                font="SF Pro Display"
-                weight="600"
+                font="SF Pro Rounded"
+                weight="700"
                 align="center"
+                tracking="0"
                 wrap
               >
                 {data.name}
@@ -651,9 +732,10 @@ app.frame(
               <Heading
                 color="text100"
                 size="18"
-                font="SF Pro Display"
-                weight="600"
+                font="SF Pro Rounded"
+                weight="700"
                 align="center"
+                tracking="0"
                 wrap
               >
                 {data.symbol}
@@ -668,9 +750,10 @@ app.frame(
               <Heading
                 color="invert"
                 size="18"
-                font="SF Pro Display"
-                weight="600"
+                font="SF Pro Rounded"
+                weight="700"
                 align="center"
+                tracking="0"
                 wrap
               >
                 Liquidity
@@ -678,9 +761,10 @@ app.frame(
               <Heading
                 color="invert"
                 size="18"
-                font="SF Pro Display"
-                weight="600"
+                font="SF Pro Rounded"
+                weight="700"
                 align="center"
+                tracking="0"
                 wrap
               >
                 Market Cap
@@ -688,9 +772,10 @@ app.frame(
               <Heading
                 color="invert"
                 size="18"
-                font="SF Pro Display"
-                weight="600"
+                font="SF Pro Rounded"
+                weight="700"
                 align="center"
+                tracking="0"
                 wrap
               >
                 Volume (24h)
@@ -701,9 +786,10 @@ app.frame(
                 <Heading
                   color="text100"
                   size="18"
-                  font="SF Pro Display"
-                  weight="600"
+                  font="SF Pro Rounded"
+                  weight="700"
                   align="center"
+                  tracking="0"
                   wrap
                 >
                   {data.liquidity ? `$${compactFormatter.format(data.liquidity)}` : '-'}
@@ -713,9 +799,10 @@ app.frame(
               <Heading
                 color="text100"
                 size="18"
-                font="SF Pro Display"
-                weight="600"
+                font="SF Pro Rounded"
+                weight="700"
                 align="center"
+                tracking="0"
                 wrap
               >
                 {data.marketCap ? `$${compactFormatter.format(data.marketCap)}` : '-'}
@@ -723,9 +810,10 @@ app.frame(
               <Heading
                 color="text100"
                 size="18"
-                font="SF Pro Display"
-                weight="600"
+                font="SF Pro Rounded"
+                weight="700"
                 align="center"
+                tracking="0"
                 wrap
               >
                 {data.volume?.h24 ? `$${compactFormatter.format(data.volume.h24)}` : '-'}
@@ -738,6 +826,67 @@ app.frame(
         <TextInput placeholder={'Enter amount in ETH to buy...'} />,
         <Button action="/coins/create">New Coin</Button>,
         <Button.Link href={`https://fomofactory.wtf/coins/${address}`}>Chart</Button.Link>,
+        <Button.Transaction target={`/buy/${address}`} action={`/coins/${address}/buy`}>
+          Buy
+        </Button.Transaction>,
+        <Button.Transaction target={`/buy/${address}/0.01`} action={`/coins/${address}/buy`}>
+          0.01 ETH
+        </Button.Transaction>,
+      ],
+    })
+  },
+  {
+    fonts,
+  },
+)
+
+app.frame(
+  '/coins/:address/buy',
+  async (c) => {
+    const { address } = c.req.param()
+    const { transactionId } = c
+
+    const data = await fetchTokenData(address as `0x${string}`)
+    const avatar = data.avatar ? await resizeImage(data.avatar, 96) : '/doge.png'
+    const swap = await getSwapData(transactionId as `0x${string}`)
+    const buyAmount = Number(formatUnits(-swap.amount1, data.decimals))
+
+    return c.res({
+      title: `FomoFactory - ${data.symbol}`,
+      browserLocation: `${process.env.VITE_APP_URL}/coins/${address}`,
+      image: (
+        <Box
+          grow
+          minHeight="100%"
+          alignHorizontal="center"
+          alignVertical="center"
+          alignItems="center"
+          alignContent="center"
+          backgroundColor="background"
+          padding="32"
+          gap="16"
+        >
+          <Heading color="invert" size="32" font="Asgard Wide" weight="900" align="center">
+            FomoFactory
+          </Heading>
+          <Image src={avatar} height="96" width="96" borderRadius="8" objectFit="cover" />
+          <Heading
+            color="invert"
+            size="24"
+            font="SF Pro Display"
+            weight="700"
+            align="center"
+            tracking="0"
+            wrap
+          >
+            <span>{`You just bought ${formatter.format(buyAmount)} ${data.symbol}!`}</span>
+            <span>Do you want to buy more?</span>
+          </Heading>
+        </Box>
+      ),
+      intents: [
+        <TextInput placeholder={'Enter amount in ETH to buy...'} />,
+        <Button action={`/coins/${address}`}>{data.symbol}</Button>,
         <Button.Transaction target={`/buy/${address}`}>Buy</Button.Transaction>,
         <Button.Transaction target={`/buy/${address}/0.01`}>0.01 ETH</Button.Transaction>,
       ],
@@ -759,7 +908,7 @@ app.transaction('/deploy', async (c) => {
   // Contract transaction response.
   return c.contract({
     abi: fomoFactoryAbi,
-    chainId: 'eip155:8453',
+    chainId: 'eip155:84532',
     functionName: 'createMemecoin',
     args: args.args as any,
     to: args.address as `0x${string}`,
@@ -777,7 +926,7 @@ app.transaction('/buy/:address/:amount?', async (c) => {
   // Contract transaction response.
   return c.contract({
     abi: swapRouterAbi,
-    chainId: 'eip155:8453',
+    chainId: 'eip155:84532',
     functionName: 'exactInputSingle',
     args: [
       {

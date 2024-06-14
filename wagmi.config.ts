@@ -6,6 +6,7 @@ import SwapRouterABI from './abi/SwapRouter02.json'
 
 import AggregatorV3Interface from '@chainlink/abi/v0.7/interfaces/AggregatorV3Interface.json' assert { type: 'json' }
 import IUniswapV3FactoryABI from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Factory.sol/IUniswapV3Factory.json' assert { type: 'json' }
+import IUniswapV3PoolABI from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json' assert { type: 'json' }
 
 export default defineConfig({
   out: 'abi/generated.ts',
@@ -29,6 +30,10 @@ export default defineConfig({
     {
       name: 'IUniswapV3Factory',
       abi: IUniswapV3FactoryABI.abi as Abi,
+    },
+    {
+      name: 'IUniswapV3Pool',
+      abi: IUniswapV3PoolABI.abi as Abi,
     },
   ],
   plugins: [],
