@@ -5,7 +5,7 @@ import { serveStatic } from 'frog/serve-static'
 import { handle } from 'frog/vercel'
 import { formatUnits } from 'viem'
 
-import { fonts, formatter, compactFormatter, Spacer, HStack, Icon } from '../ui/ui.js'
+import { fonts, formatter, compactFormatter, Spacer, HStack } from '../ui/ui.js'
 import { Box, Columns, Column, Heading, Image, VStack, vars } from '../ui/ui.js'
 import { State } from '../types/state.js'
 
@@ -593,77 +593,34 @@ app.frame(
             </Column>
           </Columns>
           <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
-            <Column alignHorizontal="left" gap="4" alignVertical="center">
+            <Column alignHorizontal="left" gap="4" alignVertical="center" lineHeight="48">
               <Heading
                 color="invert"
                 size="18"
                 font="SF Pro Rounded"
                 weight="700"
+                align="left"
                 tracking="0"
-                align="center"
                 wrap
               >
-                Liquidity
-              </Heading>
-              <Heading
-                color="invert"
-                size="18"
-                font="SF Pro Rounded"
-                weight="700"
-                tracking="0"
-                align="center"
-                wrap
-              >
-                Market Cap
-              </Heading>
-              <Heading
-                color="invert"
-                size="18"
-                font="SF Pro Rounded"
-                weight="700"
-                tracking="0"
-                align="center"
-                wrap
-              >
-                Volume (24h)
+                <span>Liquidity</span>
+                <span>Market Cap</span>
+                <span>Volume (24h)</span>
               </Heading>
             </Column>
-            <Column alignHorizontal="right" gap="4" alignVertical="center">
-              <HStack>
-                <Heading
-                  color="text100"
-                  size="18"
-                  font="SF Pro Rounded"
-                  weight="700"
-                  tracking="0"
-                  align="center"
-                  wrap
-                >
-                  {`$${compactFormatter.format(liquidity)}`}
-                </Heading>
-                <Image src="/lock.png" height="16" />
-              </HStack>
+            <Column alignHorizontal="right" gap="4" alignVertical="center" lineHeight="48">
               <Heading
                 color="text100"
                 size="18"
                 font="SF Pro Rounded"
                 weight="700"
+                align="right"
                 tracking="0"
-                align="center"
                 wrap
               >
-                {`$${compactFormatter.format(Number(process.env.VITE_USD_MARKET_CAP))}`}
-              </Heading>
-              <Heading
-                color="text100"
-                size="18"
-                font="SF Pro Rounded"
-                weight="700"
-                tracking="0"
-                align="center"
-                wrap
-              >
-                {`$${compactFormatter.format(firstBuyUsd)}`}
+                <span>{`$${compactFormatter.format(liquidity)}`}</span>
+                <span>{`$${compactFormatter.format(Number(process.env.VITE_USD_MARKET_CAP))}`}</span>
+                <span>{`$${compactFormatter.format(firstBuyUsd)}`}</span>
               </Heading>
             </Column>
           </Columns>
@@ -746,7 +703,7 @@ app.frame(
             </Column>
           </Columns>
           <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
-            <Column alignHorizontal="left" gap="4" alignVertical="center">
+            <Column alignHorizontal="left" gap="4" alignVertical="center" lineHeight="48">
               <Heading
                 color="invert"
                 size="18"
@@ -761,7 +718,7 @@ app.frame(
                 <span>Volume (24h)</span>
               </Heading>
             </Column>
-            <Column alignHorizontal="right" gap="4" alignVertical="center">
+            <Column alignHorizontal="right" gap="4" alignVertical="center" lineHeight="48">
               <Heading
                 color="text100"
                 size="18"
