@@ -5,7 +5,7 @@ import { serveStatic } from 'frog/serve-static'
 import { handle } from 'frog/vercel'
 import { formatUnits } from 'viem'
 
-import { fonts, formatter, compactFormatter, Spacer, HStack } from '../ui/ui.js'
+import { fonts, formatter, compactFormatter, Spacer, HStack, Icon } from '../ui/ui.js'
 import { Box, Columns, Column, Heading, Image, VStack, vars } from '../ui/ui.js'
 import { State } from '../types/state.js'
 
@@ -752,71 +752,30 @@ app.frame(
                 size="18"
                 font="SF Pro Rounded"
                 weight="700"
-                align="center"
+                align="left"
                 tracking="0"
                 wrap
               >
-                Liquidity
-              </Heading>
-              <Heading
-                color="invert"
-                size="18"
-                font="SF Pro Rounded"
-                weight="700"
-                align="center"
-                tracking="0"
-                wrap
-              >
-                Market Cap
-              </Heading>
-              <Heading
-                color="invert"
-                size="18"
-                font="SF Pro Rounded"
-                weight="700"
-                align="center"
-                tracking="0"
-                wrap
-              >
-                Volume (24h)
+                <span>Liquidity</span>
+                <span>Market Cap</span>
+                <span>Volume (24h)</span>
               </Heading>
             </Column>
             <Column alignHorizontal="right" gap="4" alignVertical="center">
-              <HStack>
-                <Heading
-                  color="text100"
-                  size="18"
-                  font="SF Pro Rounded"
-                  weight="700"
-                  align="center"
-                  tracking="0"
-                  wrap
-                >
-                  {data.liquidity ? `$${compactFormatter.format(data.liquidity)}` : '-'}
-                </Heading>
-                {data.liquidity ? <Image src="/lock.png" height="16" /> : <br />}
-              </HStack>
               <Heading
                 color="text100"
                 size="18"
                 font="SF Pro Rounded"
                 weight="700"
-                align="center"
+                align="right"
                 tracking="0"
                 wrap
               >
-                {data.marketCap ? `$${compactFormatter.format(data.marketCap)}` : '-'}
-              </Heading>
-              <Heading
-                color="text100"
-                size="18"
-                font="SF Pro Rounded"
-                weight="700"
-                align="center"
-                tracking="0"
-                wrap
-              >
-                {data.volume?.h24 ? `$${compactFormatter.format(data.volume.h24)}` : '-'}
+                <span>{data.liquidity ? `$${compactFormatter.format(data.liquidity)}` : '-'}</span>
+                <span>{data.marketCap ? `$${compactFormatter.format(data.marketCap)}` : '-'}</span>
+                <span>
+                  {data.volume?.h24 ? `$${compactFormatter.format(data.volume.h24)}` : '-'}
+                </span>
               </Heading>
             </Column>
           </Columns>
