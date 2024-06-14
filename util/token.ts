@@ -13,7 +13,7 @@ import {
   parseEventLogs,
   parseUnits,
 } from 'viem'
-import { baseSepolia } from 'viem/chains'
+import { base } from 'viem/chains'
 
 import { FeeAmount } from '@uniswap/v3-sdk'
 
@@ -41,8 +41,8 @@ function calculateInitialTick(totalSupply: number, marketCap: number, tickSpacin
 }
 
 const client = createPublicClient({
-  chain: baseSepolia,
-  transport: http(),
+  chain: base,
+  transport: http(process.env.VITE_RPC_PROVIDER_URL),
 })
 
 export const resizeImage = async (image: string, size: number, fileName?: string) => {
@@ -97,7 +97,7 @@ export const saveMetadata = async (address: `0x${string}`, state: State) => {
     name: address,
     keyvalues: {
       fileName: fileName,
-      chainId: baseSepolia.id,
+      chainId: base.id,
       description: state.name,
     },
   })
