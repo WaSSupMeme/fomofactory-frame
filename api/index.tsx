@@ -3,7 +3,6 @@ import { pinata } from 'frog/hubs'
 import { devtools } from 'frog/dev'
 import { serveStatic } from 'frog/serve-static'
 import { handle } from 'frog/vercel'
-import { formatUnits } from 'viem'
 
 import { fonts, formatter, compactFormatter, Spacer, HStack } from '../ui/ui.js'
 import { Box, Columns, Column, Heading, Image, VStack, vars } from '../ui/ui.js'
@@ -15,7 +14,6 @@ import {
   fetchEthUsdAmount,
   fetchTokenData,
   getDeployedToken,
-  getSwapData,
   prepareDeploy,
   resizeImage,
   saveMetadata,
@@ -119,7 +117,7 @@ app.frame(
   '/coins/create',
   async (c) => {
     const { deriveState, inputText, buttonValue } = c
-    const state = deriveState((previousState) => {
+    const state = await deriveState(async (previousState) => {
       if (!previousState.salt) {
         previousState.salt = new Date().getTime()
         return
@@ -138,6 +136,7 @@ app.frame(
       }
       if (!previousState.image && inputText) {
         previousState.image = inputText
+        previousState.avatar = await resizeImage(inputText, 96, `${stateHash(previousState)}.png`)
         return
       }
       if (!previousState.firstBuy && inputText) {
@@ -231,10 +230,6 @@ app.frame(
       )
     }
 
-    const avatar = state.image
-      ? await resizeImage(state.image, 96, `${stateHash(state)}.png`)
-      : '/doge.png'
-
     const details = (
       <Box
         grow
@@ -251,16 +246,15 @@ app.frame(
         <Heading color="text" size="32" font="SF Pro Display" weight="900" align="center">
           Let's get some details about your coin
         </Heading>
-        <Columns gap="8" grow width="100%" paddingLeft="80" paddingRight="80">
-          <Column alignHorizontal="left" gap="12">
+        <Columns gap="8" grow width="100%" paddingLeft="72" paddingRight="72">
+          <Column alignHorizontal="left" gap="12" width="1/3">
             <Heading
               color={!state.name ? 'invert' : 'text'}
               size="24"
               font="SF Pro Rounded"
               weight="700"
-              align="center"
+              align="left"
               tracking="0"
-              wrap
             >
               Name
             </Heading>
@@ -269,9 +263,8 @@ app.frame(
               size="24"
               font="SF Pro Rounded"
               weight="700"
-              align="center"
+              align="left"
               tracking="0"
-              wrap
             >
               Symbol
             </Heading>
@@ -280,22 +273,20 @@ app.frame(
               size="24"
               font="SF Pro Rounded"
               weight="700"
-              align="center"
+              align="left"
               tracking="0"
-              wrap
             >
               Total Supply
             </Heading>
           </Column>
-          <Column alignHorizontal="right" gap="12">
+          <Column alignHorizontal="right" gap="12" width="2/3">
             <Heading
               color={!state.name ? 'text100' : 'text'}
               size="24"
               font="SF Pro Rounded"
               weight="700"
-              align="center"
+              align="right"
               tracking="0"
-              wrap
             >
               {state.name || `eg 'dogwifhat'`}
             </Heading>
@@ -304,9 +295,8 @@ app.frame(
               size="24"
               font="SF Pro Rounded"
               weight="700"
-              align="center"
+              align="right"
               tracking="0"
-              wrap
             >
               {state.symbol || `eg '$WIF'`}
             </Heading>
@@ -315,9 +305,8 @@ app.frame(
               size="24"
               font="SF Pro Rounded"
               weight="700"
-              align="center"
+              align="right"
               tracking="0"
-              wrap
             >
               {state.totalSupply ? formatter.format(state.totalSupply) : `eg '420,000,000'`}
             </Heading>
@@ -417,7 +406,7 @@ app.frame(
             </Heading>
           </Column>
           <Column alignHorizontal="right">
-            <Image src={avatar} height="96" width="96" borderRadius="8" objectFit="cover" />
+            <Image src={state.avatar!!} height="96" width="96" borderRadius="8" objectFit="cover" />
           </Column>
         </Columns>
         <Heading
@@ -495,7 +484,7 @@ app.frame(
             </Heading>
           </Column>
           <Column alignHorizontal="right">
-            <Image src={avatar} height="96" width="96" borderRadius="8" objectFit="cover" />
+            <Image src={state.avatar!!} height="96" width="96" borderRadius="8" objectFit="cover" />
           </Column>
         </Columns>
         {state.firstBuy ? (
@@ -532,17 +521,14 @@ app.frame(
 app.frame(
   '/coins/created',
   async (c) => {
-    const { transactionId, deriveState } = c
+    const { deriveState } = c
     const state = await deriveState(async (previousState) => {
-      if (!previousState.address && transactionId) {
-        previousState.address = await getDeployedToken(transactionId as `0x${string}`)
+      if (!previousState.address) {
+        previousState.address = await getDeployedToken(previousState)
       }
     })
     const firstBuyUsd = await fetchEthUsdAmount(state.firstBuy || 0)
     const liquidity = Number(process.env.VITE_USD_MARKET_CAP) - firstBuyUsd
-    const avatar = state.image
-      ? await resizeImage(state.image, 96, `${state.address}.png`)
-      : '/doge.png'
 
     return c.res({
       title: `FomoFactory - ${state.symbol}`,
@@ -589,7 +575,13 @@ app.frame(
               </Heading>
             </Column>
             <Column alignHorizontal="right">
-              <Image src={avatar} height="96" width="96" borderRadius="8" objectFit="cover" />
+              <Image
+                src={state.avatar!!}
+                height="96"
+                width="96"
+                borderRadius="8"
+                objectFit="cover"
+              />
             </Column>
           </Columns>
           <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
@@ -630,12 +622,12 @@ app.frame(
         <TextInput placeholder={'Enter amount in ETH to buy...'} />,
         <Button action="/coins/create">New Coin</Button>,
         <Button.Link href={`https://fomofactory.wtf/coins/${state.address}`}>Chart</Button.Link>,
-        <Button.Transaction target={`/buy/${state.address}/buy`} action={`/coins/${state.address}`}>
+        <Button.Transaction target={`/buy/${state.address}`} action={`/coins/${state.address}`}>
           Buy
         </Button.Transaction>,
         <Button.Transaction
           target={`/buy/${state.address}/0.01`}
-          action={`/coins/${state.address}/buy`}
+          action={`/coins/${state.address}`}
         >
           0.01 ETH
         </Button.Transaction>,
@@ -657,7 +649,7 @@ app.frame(
 
     return c.res({
       title: `FomoFactory - ${data.symbol}`,
-      browserLocation: `${process.env.VITE_APP_URL}/coins/${address}`,
+      browserLocation: `${process.env.VITE_APP_URL}/coins/${data.address}`,
       image: (
         <Box
           grow
@@ -742,67 +734,6 @@ app.frame(
         <TextInput placeholder={'Enter amount in ETH to buy...'} />,
         <Button action="/coins/create">New Coin</Button>,
         <Button.Link href={`https://fomofactory.wtf/coins/${address}`}>Chart</Button.Link>,
-        <Button.Transaction target={`/buy/${address}`} action={`/coins/${address}/buy`}>
-          Buy
-        </Button.Transaction>,
-        <Button.Transaction target={`/buy/${address}/0.01`} action={`/coins/${address}/buy`}>
-          0.01 ETH
-        </Button.Transaction>,
-      ],
-    })
-  },
-  {
-    fonts,
-  },
-)
-
-app.frame(
-  '/coins/:address/buy',
-  async (c) => {
-    const { address } = c.req.param()
-    const { transactionId } = c
-
-    const data = await fetchTokenData(address as `0x${string}`)
-    const avatar = data.avatar ? await resizeImage(data.avatar, 96) : '/doge.png'
-    const swap = await getSwapData(transactionId as `0x${string}`)
-    const buyAmount = Number(formatUnits(-swap.amount1, data.decimals))
-
-    return c.res({
-      title: `FomoFactory - ${data.symbol}`,
-      browserLocation: `${process.env.VITE_APP_URL}/coins/${address}`,
-      image: (
-        <Box
-          grow
-          minHeight="100%"
-          alignHorizontal="center"
-          alignVertical="center"
-          alignItems="center"
-          alignContent="center"
-          backgroundColor="background"
-          padding="32"
-          gap="16"
-        >
-          <Heading color="invert" size="32" font="Asgard Wide" weight="900" align="center">
-            FomoFactory
-          </Heading>
-          <Image src={avatar} height="96" width="96" borderRadius="8" objectFit="cover" />
-          <Heading
-            color="invert"
-            size="24"
-            font="SF Pro Display"
-            weight="700"
-            align="center"
-            tracking="0"
-            wrap
-          >
-            <span>{`You just bought ${formatter.format(buyAmount)} ${data.symbol}!`}</span>
-            <span>Do you want to buy more?</span>
-          </Heading>
-        </Box>
-      ),
-      intents: [
-        <TextInput placeholder={'Enter amount in ETH to buy...'} />,
-        <Button action={`/coins/${address}`}>{data.symbol}</Button>,
         <Button.Transaction target={`/buy/${address}`}>Buy</Button.Transaction>,
         <Button.Transaction target={`/buy/${address}/0.01`}>0.01 ETH</Button.Transaction>,
       ],
@@ -821,7 +752,6 @@ app.transaction('/deploy', async (c) => {
 
   const args = await prepareDeploy(state as State)
 
-  // Contract transaction response.
   return c.contract({
     abi: fomoFactoryAbi,
     chainId: 'eip155:8453',
@@ -835,11 +765,11 @@ app.transaction('/deploy', async (c) => {
 app.transaction('/buy/:address/:amount?', async (c) => {
   const { address, amount } = c.req.param()
   const { inputText } = c
+  console.log({ address, amount, inputText })
 
   const ethToSpend = amount || inputText || '0'
   const ethAmount = parseEther(ethToSpend)
 
-  // Contract transaction response.
   return c.contract({
     abi: swapRouterAbi,
     chainId: 'eip155:8453',

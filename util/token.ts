@@ -64,12 +64,13 @@ export const resizeImage = async (image: string, size: number, fileName?: string
 export const stateHash = (state: Partial<State>) => {
   return hashMessage(
     JSON.stringify({
+      salt: state.salt,
       name: state.name,
       symbol: state.symbol,
       totalSupply: state.totalSupply,
       image: state.image,
     }),
-  ).substring(0, 42)
+  ).substring(0, 42) as `0x${string}`
 }
 
 export const computeTokenAddress = async (creator: `0x${string}`, state: State) => {
@@ -88,6 +89,7 @@ export const computeTokenAddress = async (creator: `0x${string}`, state: State) 
 }
 
 export const saveMetadata = async (address: `0x${string}`, state: State) => {
+  const hash = stateHash(state)
   const imageName = state.image.substring(state.image.lastIndexOf('/') + 1)
   const image = new Blob([await (await fetch(state.image)).arrayBuffer()])
   const fileName = avatarFileName(address, imageName)
@@ -99,6 +101,7 @@ export const saveMetadata = async (address: `0x${string}`, state: State) => {
       fileName: fileName,
       chainId: base.id,
       description: state.name,
+      stateHash: hash,
     },
   })
   formData.append('pinataMetadata', data)
@@ -197,16 +200,21 @@ export const prepareDeploy = async (state: State) => {
   }
 }
 
-export const getDeployedToken = async (txHash: `0x${string}`) => {
-  const receipt = await client.waitForTransactionReceipt({ hash: txHash })
+export const getDeployedToken = async (state: Partial<State>) => {
+  const hash = stateHash(state)
+  console.log(hash)
+  const res = await fetch(
+    `https://api.pinata.cloud/data/pinList?status=pinned&metadata[keyvalues][stateHash]={"value":"${hash}","op":"eq"}`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${process.env.VITE_PINATA_JWT}`,
+      },
+    },
+  )
 
-  const logs = parseEventLogs({
-    abi: fomoFactoryAbi,
-    eventName: 'MemecoinCreated',
-    logs: receipt.logs,
-  })
-
-  return logs[0]!.args.memecoin
+  const resData = (await res.json()) as TokensMetadata
+  return resData.rows[0]!!.metadata.name
 }
 
 interface TokensMetadata {
@@ -218,6 +226,7 @@ interface TokensMetadata {
       keyvalues: {
         description: string
         fileName: string
+        stateHash: string
         telegram: string
         twitter: string
         website: string

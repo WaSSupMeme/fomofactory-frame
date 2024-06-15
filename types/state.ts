@@ -5,5 +5,6 @@ export type State = {
   symbol: string
   totalSupply: number
   image: string
+  avatar: string
   firstBuy: number
 }
