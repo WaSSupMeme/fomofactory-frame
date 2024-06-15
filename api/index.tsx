@@ -12,6 +12,7 @@ import { fomoFactoryAbi, swapRouterAbi } from '../abi/generated.js'
 import {
   computeTokenAddress,
   fetchEthUsdAmount,
+  fetchInitialTick,
   fetchTokenData,
   getDeployedToken,
   prepareDeploy,
@@ -527,8 +528,10 @@ app.frame(
         previousState.address = await getDeployedToken(previousState)
       }
     })
+    const initialTick = await fetchInitialTick(state as State)
+    const price = Math.pow(1.0001, initialTick)
+    const marketCap = await fetchEthUsdAmount(state.totalSupply!! * price)
     const firstBuyUsd = await fetchEthUsdAmount(state.firstBuy || 0)
-    const liquidity = Number(process.env.VITE_USD_MARKET_CAP) - firstBuyUsd
 
     return c.res({
       title: `FomoFactory - ${state.symbol}`,
@@ -610,8 +613,8 @@ app.frame(
                 tracking="0"
                 wrap
               >
-                <span>{`$${compactFormatter.format(liquidity)}`}</span>
-                <span>{`$${compactFormatter.format(Number(process.env.VITE_USD_MARKET_CAP))}`}</span>
+                <span>{`$${compactFormatter.format(marketCap)}`}</span>
+                <span>{`$${compactFormatter.format(marketCap)}`}</span>
                 <span>{`$${compactFormatter.format(firstBuyUsd)}`}</span>
               </Heading>
             </Column>
@@ -765,7 +768,6 @@ app.transaction('/deploy', async (c) => {
 app.transaction('/buy/:address/:amount?', async (c) => {
   const { address, amount } = c.req.param()
   const { inputText } = c
-  console.log({ address, amount, inputText })
 
   const ethToSpend = amount || inputText || '0'
   const ethAmount = parseEther(ethToSpend)

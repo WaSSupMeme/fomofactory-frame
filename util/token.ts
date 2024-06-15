@@ -163,6 +163,18 @@ export const fetchEthUsdAmount = async (ethAmount: number) => {
   return ethAmount * ethPrice
 }
 
+export const fetchInitialTick = async (state: State) => {
+  const marketCap = await fetchUsdEthAmount(Number(process.env.VITE_USD_MARKET_CAP!!))
+  const tickSpacing = await client.readContract({
+    address: process.env.VITE_UNISWAP_V3_FACTORY_ADDRESS as `0x${string}`,
+    abi: iUniswapV3FactoryAbi,
+    functionName: 'feeAmountTickSpacing',
+    args: [FeeAmount.HIGH],
+  })
+
+  return calculateInitialTick(state.totalSupply, marketCap, tickSpacing as number)
+}
+
 export const prepareDeploy = async (state: State) => {
   const [protocolFeeEth, tickSpacing] = await client.multicall({
     allowFailure: false,
@@ -202,7 +214,6 @@ export const prepareDeploy = async (state: State) => {
 
 export const getDeployedToken = async (state: Partial<State>) => {
   const hash = stateHash(state)
-  console.log(hash)
   const res = await fetch(
     `https://api.pinata.cloud/data/pinList?status=pinned&metadata[keyvalues][stateHash]={"value":"${hash}","op":"eq"}`,
     {
