@@ -25,10 +25,6 @@ import {
   iUniswapV3PoolAbi,
 } from '../abi/generated.js'
 
-const avatarFileName = (address: `0x${string}`, imageName: string) => {
-  return `${address}.${imageName.split('.').pop()}`
-}
-
 const adjustSpacing = (tick: number, spacing: number) => {
   return Math.floor(tick / spacing) * spacing
 }
@@ -47,6 +43,10 @@ const client = createPublicClient({
 
 export const resizeImage = async (image: string, size: number, fileName?: string) => {
   const img = await Jimp.read(image)
+  const mime = img.getMIME()
+  if (mime !== Jimp.MIME_JPEG && mime !== Jimp.MIME_PNG && mime !== Jimp.MIME_GIF) {
+    throw new Error('Invalid image format')
+  }
   const name = fileName || image.substring(image.lastIndexOf('/') + 1)
   const buffer = await img.cover(size, size).quality(100).getBufferAsync(Jimp.MIME_JPEG)
   const formData = new FormData()
@@ -90,9 +90,14 @@ export const computeTokenAddress = async (creator: `0x${string}`, state: State) 
 
 export const saveMetadata = async (address: `0x${string}`, state: State) => {
   const hash = stateHash(state)
-  const imageName = state.image.substring(state.image.lastIndexOf('/') + 1)
-  const image = new Blob([await (await fetch(state.image)).arrayBuffer()])
-  const fileName = avatarFileName(address, imageName)
+  const img = await Jimp.read(state.image)
+  const mime = img.getMIME()
+  if (mime !== Jimp.MIME_JPEG && mime !== Jimp.MIME_PNG && mime !== Jimp.MIME_GIF) {
+    throw new Error('Invalid image format')
+  }
+  const extension = mime.split('/')[1]
+  const image = new Blob([await img.getBufferAsync(mime)])
+  const fileName = `${address}.${extension}`
   const formData = new FormData()
   formData.append('file', image, fileName)
   const data = JSON.stringify({

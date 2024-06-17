@@ -136,8 +136,12 @@ app.frame(
         return
       }
       if (!previousState.image && inputText) {
-        previousState.image = inputText
-        previousState.avatar = await resizeImage(inputText, 96, `${stateHash(previousState)}.png`)
+        try {
+          previousState.avatar = await resizeImage(inputText, 96, `${stateHash(previousState)}.png`)
+          previousState.image = inputText
+        } catch (e: any) {
+          return
+        }
         return
       }
       if (!previousState.firstBuy && inputText) {
