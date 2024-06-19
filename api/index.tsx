@@ -591,38 +591,40 @@ app.frame(
               />
             </Column>
           </Columns>
-          <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
-            <Column alignHorizontal="left" gap="4" alignVertical="center" lineHeight="48">
-              <Heading
-                color="invert"
-                size="18"
-                font="SF Pro Rounded"
-                weight="700"
-                align="left"
-                tracking="0"
-                wrap
-              >
-                <span>Liquidity</span>
-                <span>Market Cap</span>
-                <span>Volume (24h)</span>
-              </Heading>
-            </Column>
-            <Column alignHorizontal="right" gap="4" alignVertical="center" lineHeight="48">
-              <Heading
-                color="text100"
-                size="18"
-                font="SF Pro Rounded"
-                weight="700"
-                align="right"
-                tracking="0"
-                wrap
-              >
-                <span>{`$${compactFormatter.format(marketCap)}`}</span>
-                <span>{`$${compactFormatter.format(marketCap)}`}</span>
-                <span>{`$${compactFormatter.format(firstBuyUsd)}`}</span>
-              </Heading>
-            </Column>
-          </Columns>
+          <HStack
+            width="100%"
+            alignHorizontal="center"
+            gap="60"
+            paddingLeft="160"
+            paddingRight="160"
+          >
+            <Heading
+              color="invert"
+              size="18"
+              font="SF Pro Rounded"
+              weight="700"
+              align="left"
+              tracking="0"
+              wrap
+            >
+              <span>Liquidity</span>
+              <span>Market Cap</span>
+              <span>Volume (24h)</span>
+            </Heading>
+            <Heading
+              color="text100"
+              size="18"
+              font="SF Pro Rounded"
+              weight="700"
+              align="right"
+              tracking="0"
+              wrap
+            >
+              <span>{`$${compactFormatter.format(marketCap)}`}</span>
+              <span>{`$${compactFormatter.format(marketCap)}`}</span>
+              <span>{`$${compactFormatter.format(firstBuyUsd)}`}</span>
+            </Heading>
+          </HStack>
         </Box>
       ),
       intents: [
@@ -701,40 +703,40 @@ app.frame(
               <Image src={avatar} height="96" width="96" borderRadius="8" objectFit="cover" />
             </Column>
           </Columns>
-          <Columns width="100%" alignHorizontal="center" paddingLeft="160" paddingRight="160">
-            <Column alignHorizontal="left" gap="4" alignVertical="center" lineHeight="48">
-              <Heading
-                color="invert"
-                size="18"
-                font="SF Pro Rounded"
-                weight="700"
-                align="left"
-                tracking="0"
-                wrap
-              >
-                <span>Liquidity</span>
-                <span>Market Cap</span>
-                <span>Volume (24h)</span>
-              </Heading>
-            </Column>
-            <Column alignHorizontal="right" gap="4" alignVertical="center" lineHeight="48">
-              <Heading
-                color="text100"
-                size="18"
-                font="SF Pro Rounded"
-                weight="700"
-                align="right"
-                tracking="0"
-                wrap
-              >
-                <span>{data.liquidity ? `$${compactFormatter.format(data.liquidity)}` : '-'}</span>
-                <span>{data.marketCap ? `$${compactFormatter.format(data.marketCap)}` : '-'}</span>
-                <span>
-                  {data.volume?.h24 ? `$${compactFormatter.format(data.volume.h24)}` : '-'}
-                </span>
-              </Heading>
-            </Column>
-          </Columns>
+          <HStack
+            width="100%"
+            alignHorizontal="center"
+            gap="60"
+            paddingLeft="160"
+            paddingRight="160"
+          >
+            <Heading
+              color="invert"
+              size="18"
+              font="SF Pro Rounded"
+              weight="700"
+              align="left"
+              tracking="0"
+              wrap
+            >
+              <span>Liquidity</span>
+              <span>Market Cap</span>
+              <span>Volume (24h)</span>
+            </Heading>
+            <Heading
+              color="text100"
+              size="18"
+              font="SF Pro Rounded"
+              weight="700"
+              align="right"
+              tracking="0"
+              wrap
+            >
+              <span>{data.liquidity ? `$${compactFormatter.format(data.liquidity)}` : '-'}</span>
+              <span>{data.marketCap ? `$${compactFormatter.format(data.marketCap)}` : '-'}</span>
+              <span>{data.volume?.h24 ? `$${compactFormatter.format(data.volume.h24)}` : '-'}</span>
+            </Heading>
+          </HStack>
         </Box>
       ),
       intents: [
