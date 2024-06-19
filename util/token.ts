@@ -51,14 +51,25 @@ export const resizeImage = async (image: string, size: number, fileName?: string
   const buffer = await img.cover(size, size).quality(100).getBufferAsync(Jimp.MIME_JPEG)
   const formData = new FormData()
   formData.append('file', new Blob([buffer]), `${name.split('.')[0].substring(22)}.jpg`)
-  const resp = await fetch('https://tmpfiles.org/api/v1/upload', {
+  const data = JSON.stringify({
+    name: name.split('.')[0].substring(22),
+  })
+  formData.append('pinataMetadata', data)
+
+  const options = JSON.stringify({
+    cidVersion: 0,
+  })
+  formData.append('pinataOptions', options)
+
+  const resp = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
     method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.VITE_PINATA_JWT}`,
+    },
     body: formData,
   })
-  const data = await resp.json()
-  const url = data.data.url as string
-  const path = `https://tmpfiles.org/dl${url.substring(url.indexOf('tmpfiles.org') + 12)}`
-  return path
+  const resData = await resp.json()
+  return `${process.env.VITE_GATEWAY_URL}/ipfs/${resData.IpfsHash}`
 }
 
 export const stateHash = (state: Partial<State>) => {
