@@ -4,8 +4,8 @@ import { devtools } from 'frog/dev'
 import { serveStatic } from 'frog/serve-static'
 import { handle } from 'frog/vercel'
 
-import { fonts, formatter, compactFormatter, Spacer, HStack } from '../ui/ui.js'
-import { Box, Columns, Column, Heading, Image, VStack, vars } from '../ui/ui.js'
+import { fonts, formatter, compactFormatter, HStack } from '../ui/ui.js'
+import { Box, Columns, Column, Heading, Image, Text, VStack, vars } from '../ui/ui.js'
 import { State } from '../types/state.js'
 
 import { fomoFactoryAbi, swapRouterAbi } from '../abi/generated.js'
@@ -51,60 +51,61 @@ app.frame(
           alignItems="center"
           alignContent="center"
           backgroundColor="background"
-          padding="32"
+          gap="12"
         >
-          <VStack gap="12" alignHorizontal="center">
-            <Heading color="invert" size="48" font="Asgard Wide" weight="900" align="center">
-              FomoFactory
+          <Heading color="invert" size="48" font="Asgard Wide" weight="900" align="center">
+            FomoFactory
+          </Heading>
+          <VStack gap="0" alignHorizontal="center">
+            <Heading font="SF Pro Display" weight="900" size="48" tracking="-2" align="center">
+              Create your
             </Heading>
-            <Spacer size="4" />
-            <VStack gap="0" alignHorizontal="center">
-              <Heading font="SF Pro Display" weight="900" size="48" tracking="-2" align="center">
-                Create your
+            <HStack gap="8" alignHorizontal="center">
+              <Heading
+                font="SF Pro Display"
+                weight="900"
+                size="48"
+                tracking="-2"
+                align="center"
+                wrap
+              >
+                memecoin
               </Heading>
-              <HStack gap="8" alignHorizontal="center">
-                <Heading
-                  font="SF Pro Display"
-                  weight="900"
-                  size="48"
-                  tracking="-2"
-                  align="center"
-                  wrap
-                >
-                  memecoin
-                </Heading>
-                <Image src="/base.png" height="42" />
-                <Heading
-                  font="SF Pro Display"
-                  weight="900"
-                  size="48"
-                  tracking="-2"
-                  align="center"
-                  color="invert"
-                  wrap
-                >
-                  on Base
-                </Heading>
-              </HStack>
-            </VStack>
-            <Spacer size="4" />
-            <Heading
-              color="text"
-              size="24"
-              font="SF Pro Text"
-              weight="500"
-              align="center"
-              tracking="-1"
-              wrap
-            >
-              <span>Deploy a contract, add liquidity and</span>
-              <span>bootstrap trading with one click</span>
-            </Heading>
+              <Image src="/base.png" height="42" />
+              <Heading
+                font="SF Pro Display"
+                weight="900"
+                size="48"
+                tracking="-2"
+                align="center"
+                color="invert"
+                wrap
+              >
+                on Base
+              </Heading>
+            </HStack>
           </VStack>
+          <Heading
+            color="text"
+            size="24"
+            font="SF Pro Text"
+            weight="500"
+            align="center"
+            tracking="-1"
+            wrap
+          >
+            <span>Deploy a token, add liquidity</span>
+            <span>and start trading for under $1</span>
+          </Heading>
+          <Box width="100%" paddingLeft="160">
+            <Text color="text" size="24" font="SF Pro Text" weight="500" align="left" tracking="-1">
+              👇
+            </Text>
+          </Box>
         </Box>
       ),
       intents: [
-        <Button action="/coins/create">Get Started</Button>,
+        <Button action="/coins/create">Mint Coin</Button>,
         <Button.Link href="https://fomofactory.wtf/top">Top Coins</Button.Link>,
       ],
     })
